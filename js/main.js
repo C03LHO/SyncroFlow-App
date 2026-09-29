@@ -262,8 +262,9 @@ wireKeyboard();
 
 // Atualiza o título da página no topbar conforme a view
 const PAGE_TITLES = {
-  board:'Quadro', dashboard:'Dashboard', gantt:'Gantt', calendar:'Calendário',
-  ferias:'Férias', mypanel:'Meu Painel', equipes:'Equipes', usuarios:'Usuários',
+  board:'Quadro', meudia:'Meu Dia', dashboard:'Dashboard', metrics:'Métricas',
+  gantt:'Gantt', calendar:'Calendário', ranking:'Ranking', archived:'Arquivados',
+  ferias:'Ausências', mypanel:'Meu Painel', equipes:'Equipes', usuarios:'Usuários',
   guia:'Guia', sobre:'Sobre',
 };
 import('./core/events.js').then(({ on }) => {

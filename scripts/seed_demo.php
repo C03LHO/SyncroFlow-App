@@ -56,18 +56,18 @@ out("• Dados demo anteriores limpos.");
 /* ─── 1) Usuários demo ─── */
 $hash = password_hash('demo@2026', PASSWORD_BCRYPT, ['cost' => 10]);
 $people = [
-    ['900000001','Mariana Lopes','gestor','Gerência de Projetos'],
+    ['900000001','Mariana Lopes','gestor','Produto'],
     ['900000002','Carlos Eduardo Reis','gestor','Operações'],
-    ['900000003','Fernanda Alves','analista','Engenharia'],
-    ['900000004','Rafael Monteiro','analista','Engenharia'],
-    ['900000005','Juliana Castro','analista','Planejamento'],
-    ['900000006','Bruno Tavares','analista','Manutenção'],
+    ['900000003','Fernanda Alves','analista','Desenvolvimento'],
+    ['900000004','Rafael Monteiro','analista','Desenvolvimento'],
+    ['900000005','Juliana Castro','analista','Design'],
+    ['900000006','Bruno Tavares','analista','Suporte'],
     ['900000007','Patrícia Gomes','analista','Qualidade'],
-    ['900000008','Diego Fernandes','analista','Logística'],
+    ['900000008','Diego Fernandes','analista','Infraestrutura'],
     ['900000009','Aline Ribeiro','analista','TI'],
-    ['900000010','Thiago Martins','analista','Suprimentos'],
-    ['900000011','Camila Souza','analista','Meio Ambiente'],
-    ['900000012','Gustavo Pereira','visitante','Auditoria'],
+    ['900000010','Thiago Martins','analista','Dados'],
+    ['900000011','Camila Souza','analista','Marketing'],
+    ['900000012','Gustavo Pereira','visitante','Financeiro'],
 ];
 $insUser = "INSERT OR REPLACE INTO users (user_id, password_hash, name, email, role, job_title, department, color, active_title, onboarding_done, total_logins, last_login, created_at, is_active)
             VALUES (?,?,?,?,?,?,?,?,?,1,?,?,?,1)";
@@ -82,13 +82,13 @@ out("• ".count($people)." usuários demo criados (senha: demo@2026).");
 
 /* ─── 2) Equipes demo ─── */
 $teams = [
-    ['demo-expansao','Projeto Expansão Norte','Ampliação da capacidade operacional no norte','🚀','#2563EB',
+    ['demo-app','Lançamento do App','Nova versão do aplicativo móvel','🚀','#2563EB',
       ['900000001'=>'gestor','900000009'=>'ti','900000003'=>'analista','900000004'=>'analista','900000005'=>'analista','900000012'=>'visitante']],
-    ['demo-manutencao','Manutenção Industrial','Planejamento e execução de manutenção preventiva','🛠️','#EA580C',
+    ['demo-suporte','Suporte & Operações','Atendimento ao cliente e estabilidade da plataforma','🛠️','#EA580C',
       ['900000002'=>'gestor','900000006'=>'analista','900000008'=>'analista','900000010'=>'analista']],
-    ['demo-qualidade','Qualidade & Processos','Melhoria contínua e simplificação de processos','📊','#16A34A',
+    ['demo-marketing','Marketing & Growth','Campanhas, conteúdo e crescimento','📣','#16A34A',
       ['900000001'=>'gestor','900000007'=>'analista','900000011'=>'analista','900000005'=>'analista']],
-    ['demo-sustentabilidade','Sustentabilidade','Iniciativas ambientais e ESG','🌎','#0D9488',
+    ['demo-pessoas','Pessoas & Cultura','Contratação, integração e bem-estar do time','🌱','#0D9488',
       ['900000002'=>'gestor','900000011'=>'analista','900000003'=>'analista']],
 ];
 $cols = [
@@ -112,17 +112,17 @@ out("• ".count($teams)." equipes demo criadas com colunas e membros.");
 
 /* ─── 3) Cards + subtarefas + comentários + histórico ─── */
 $titlesByTeam = [
-  'demo-expansao'=>['Estudo de viabilidade da linha 3','Contratação de empreiteira','Licenciamento ambiental','Cronograma físico-financeiro','Aquisição de equipamentos','Plano de comissionamento','Análise de risco geotécnico','Treinamento da equipe de obra','Revisão do projeto elétrico','Mobilização do canteiro'],
-  'demo-manutencao'=>['Inspeção preditiva dos motores','Troca de correias transportadoras','Calibração de sensores','Plano de lubrificação','Parada programada março','Análise de vibração','Estoque de peças críticas','Manutenção da britagem'],
-  'demo-qualidade'=>['Mapeamento do processo de expedição','Auditoria interna ISO 9001','Redução de retrabalho na pintura','Padronização de procedimentos','Dashboard de indicadores','Plano de ação 5W2H','Simplificação de aprovações'],
-  'demo-sustentabilidade'=>['Inventário de emissões GEE','Programa de reflorestamento','Reuso de água industrial','Relatório de sustentabilidade','Gestão de resíduos sólidos','Educação ambiental'],
+  'demo-app'=>['Tela de onboarding','Login com e-mail e senha','Carrinho de compras','Integração com pagamentos','Notificações push','Testes de usabilidade','Modo escuro','Publicação nas lojas','Revisão de acessibilidade','Performance da tela inicial'],
+  'demo-suporte'=>['Base de conhecimento','Automação de respostas','Monitoramento de erros','Backup semanal dos servidores','Pesquisa de satisfação','Atualização de dependências','Reduzir tempo de resposta','Escala de plantão'],
+  'demo-marketing'=>['Campanha de lançamento','Calendário de posts','Nova landing page','Newsletter mensal','Estudo de concorrentes','Vídeo de demonstração','Webinar com clientes'],
+  'demo-pessoas'=>['Processo seletivo de designers','Kit de boas-vindas','Pesquisa de clima','Plano de carreira','Semana de integração','Programa de mentoria'],
 ];
 $colKeys = ['backlog','andamento','revisao','concluido'];
 $prios = ['baixa','media','alta','urgente'];
-$visions = ['','Projetos','Simplificação'];
-$tagPool = ['obra','crítico','meio-ambiente','urgente','melhoria','iso','custo','prazo','segurança','qualidade','manutenção','dados'];
+$visions = ['','Produto','Crescimento'];
+$tagPool = ['mobile','crítico','ux','urgente','melhoria','backend','custo','prazo','segurança','qualidade','conteúdo','dados'];
 $subPool = ['Levantar requisitos','Aprovar orçamento','Validar com a área','Executar','Documentar','Revisar entrega','Comunicar stakeholders','Homologar'];
-$commentPool = ['Avançando conforme o planejado.','Precisamos alinhar com o fornecedor.','Aguardando aprovação do gestor.','Risco de atraso por causa do clima.','Concluído antes do prazo! 🎉','Vamos revisar o escopo amanhã.','Bloqueado: falta liberação de acesso.','Ótimo trabalho, equipe!'];
+$commentPool = ['Avançando conforme o planejado.','Precisamos alinhar com o time de design.','Aguardando aprovação do gestor.','Risco de atraso: depende de outra equipe.','Concluído antes do prazo! 🎉','Vamos revisar o escopo amanhã.','Bloqueado: falta liberação de acesso.','Ótimo trabalho, equipe!'];
 
 $totalCards = 0; $totalComments = 0; $totalSubs = 0;
 foreach ($teams as [$tid,$tname,$desc,$icon,$color,$members]) {
@@ -149,7 +149,7 @@ foreach ($teams as [$tid,$tname,$desc,$icon,$color,$members]) {
               gains_horas_mes,gains_economia_mes,gains_qualitativo,revision,created_at,updated_at)
            VALUES (?,?,?,?,?,?,?,?,?,?,?, 'manual', ?, ?, 0, ?, ?, '[]', 1, ?, ?)", [
             $cid, $tid, "$tid-$colKey", $title,
-            'Iniciativa da equipe '.$tname.'. '.pick(['Escopo definido com a liderança.','Alinhado ao planejamento anual.','Demanda prioritária do período.']),
+            'Iniciativa da equipe '.$tname.'. '.pick(['Escopo definido com o time.','Alinhado ao planejamento do trimestre.','Demanda prioritária do período.']),
             $assignee, $start, $due,
             ($due < $today->format('Y-m-d') && !$done) ? 'atrasado' : 'no-prazo',
             $prio, $progress, pick($visions),
@@ -205,9 +205,9 @@ try {
 try {
     q("DELETE FROM notices WHERE id LIKE 'demo-%'");
     q("INSERT INTO notices (id,text,type,author,team_id,created_at) VALUES (?,?,?,?,?,?)",
-      ['demo-n1','Reunião de status toda segunda às 9h.','info','Mariana Lopes','demo-expansao',$now]);
+      ['demo-n1','Reunião de status toda segunda às 9h.','info','Mariana Lopes','demo-app',$now]);
     q("INSERT INTO notices (id,text,type,author,team_id,created_at) VALUES (?,?,?,?,?,?)",
-      ['demo-n2','Parada programada de manutenção neste fim de semana.','warn','Carlos Eduardo Reis','demo-manutencao',$now]);
+      ['demo-n2','Janela de manutenção dos servidores no sábado às 22h.','warn','Carlos Eduardo Reis','demo-suporte',$now]);
     out("• Avisos demo publicados.");
 } catch (Exception $e) {}
 

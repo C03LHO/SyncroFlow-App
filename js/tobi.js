@@ -2087,7 +2087,7 @@ function quake() {
   if (!scene) return;
   scene.classList.add('tobi-quaking');
   const falas = ['TEERREMOTOOO! 🌋', 'tremeu tudo! 😱', 'segura as metas! 🫨',
-                 'abalo sísmico no quadro! 📉', 'cadê meu capacete?! ⛏️', 'a terra treme! 🪨'];
+                 'abalo sísmico no quadro! 📉', 'cadê meu capacete?! 👷', 'a terra treme! 🪨'];
   try { say(falas[Math.floor(Math.random() * falas.length)]); } catch (e) {}
   setTimeout(() => scene.classList.remove('tobi-quaking'), 1300);
 }

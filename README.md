@@ -1,27 +1,44 @@
-# 🌊 SyncroFlow
+<p align="center">
+  <img src="docs/screenshots/banner.webp" alt="SyncroFlow — Kanban com métricas, ligas e um castor que torce por você" width="100%">
+</p>
 
-> Kanban para times que precisam de clareza, ritmo e ganhos mensuráveis — com métricas, gamificação e multi-equipe.
+<p align="center">
+  <img src="https://img.shields.io/badge/PHP-7.4%2B-777BB4?logo=php&logoColor=white" alt="PHP 7.4+">
+  <img src="https://img.shields.io/badge/SQLite-WAL-003B57?logo=sqlite&logoColor=white" alt="SQLite">
+  <img src="https://img.shields.io/badge/JavaScript-ES%20Modules-F7DF1E?logo=javascript&logoColor=black" alt="ES Modules">
+  <img src="https://img.shields.io/badge/build-nenhum-2ea44f" alt="Sem build">
+  <img src="https://img.shields.io/badge/licen%C3%A7a-MIT-blue" alt="Licença MIT">
+</p>
 
-![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4?logo=php&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-WAL-003B57?logo=sqlite&logoColor=white)
-![Sem build](https://img.shields.io/badge/build-nenhum-2ea44f)
-![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)
+<p align="center">
+  <b>Um quadro Kanban completo, bonito e divertido — que roda em qualquer lugar com PHP.</b><br>
+  Sem Composer, sem npm, sem Docker, sem etapa de build: clone, rode um comando e pronto.
+</p>
 
-SyncroFlow é um sistema web de gestão de fluxo de trabalho (Kanban) com **dashboards, métricas de fluxo, gamificação (ligas e conquistas) e múltiplas equipes**. Foi feito para ser **simples de implantar**: PHP + SQLite, sem Composer, sem npm e sem etapa de build — publicar é copiar a pasta.
+<p align="center">
+  <a href="#-como-rodar">Como rodar</a> ·
+  <a href="#-por-dentro">Prints</a> ·
+  <a href="#-conheça-o-tobi">O mascote</a> ·
+  <a href="#-recursos">Recursos</a> ·
+  <a href="#-documentação">Documentação</a>
+</p>
 
-## ✨ Destaques
+<br>
 
-- **Quadro Kanban** com arrastar-e-soltar, filtros, raias (swimlanes), limites de WIP, sprints e colunas recolhíveis.
-- **Cards completos**: subtarefas aninhadas, comentários com reações, etiquetas, prioridade, dependências, campos personalizados e registro de ganhos (horas/economia).
-- **Visualizações**: Dashboard, Gantt, Calendário, Métricas de fluxo (lead/cycle time, throughput, CFD), Meu Painel e Meu Dia.
-- **Multi-equipe**: quadros isolados por equipe, com cargos por equipe, convites e férias/ausências.
-- **Gamificação**: ligas semanais por XP (do Girino ao Leviatã), troféus, títulos e o mascote Tobi.
-- **Segurança**: login por e-mail, senhas com bcrypt, política de senha forte, limite de tentativas, sessão httpOnly e backups criptografados (AES-256-GCM).
-- **Acessibilidade**: temas claro/escuro, modo de baixa visão, leitura tranquila, redução de movimento e atalhos de teclado.
+<p align="center">
+  <img src="docs/screenshots/quadro.webp" alt="Quadro Kanban do SyncroFlow" width="100%">
+</p>
+
+## ✨ Por que o SyncroFlow?
+
+- 🧭 **Clareza** — quadros por equipe, filtros, raias e indicadores mostram na hora o que está andando e o que travou.
+- 📈 **Resultado mensurável** — cada card registra horas e dinheiro economizados; o dashboard transforma isso em projeção mensal e anual.
+- 🏆 **Ritmo** — ligas semanais, quase 100 conquistas e um mascote que comemora (e dá bronca) junto com o time.
+- 🪶 **Leveza** — PHP + SQLite em uma pasta. Publicar é copiar arquivos; o banco se cria sozinho.
 
 ## 🚀 Como rodar
 
-**Pré-requisito:** PHP 7.4 ou superior com as extensões `pdo_sqlite`, `mbstring`, `openssl` e `fileinfo` (já vêm habilitadas na maioria das instalações).
+Você só precisa do **PHP 7.4 ou superior** (com `pdo_sqlite`, `mbstring`, `openssl` e `fileinfo`, que já vêm na maioria das instalações).
 
 ```bash
 git clone https://github.com/C03LHO/SyncroFlow-App.git
@@ -29,80 +46,185 @@ cd SyncroFlow-App
 php -S localhost:8000
 ```
 
-Abra **http://localhost:8000** e crie a conta de administrador — o primeiro usuário cadastrado administra o sistema. O banco de dados é criado sozinho na pasta `data/`.
+Abra **http://localhost:8000** e crie sua conta — o primeiro usuário vira o administrador. Não há nada para configurar: o banco é criado automaticamente na pasta `data/`.
 
-Não é preciso configurar nada para rodar localmente: sem `config.json`, o sistema usa os padrões de `config.example.json`. Para personalizar (porta, caminhos, e-mail), copie o modelo:
-
-```bash
-cp config.example.json config.json
-```
-
-### Dados de demonstração (opcional)
-
-Para ver o sistema já preenchido, com 12 usuários, 2 equipes e cards de exemplo:
+**Quer ver tudo preenchido?** Gere dados de demonstração (12 pessoas, 4 equipes, 31 cards):
 
 ```bash
 php scripts/seed_demo.php
 ```
 
-Entre com `demo01@syncroflow.local` (gestora) — ou `demo02` … `demo12` — e a senha `demo@2026`.
+e entre com `demo01@syncroflow.local` / `demo@2026`.
 
-### Testes
+## 🖼 Por dentro
 
-```bash
-php tests/auth_test.php
-```
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/dashboard.webp" alt="Dashboard"><br><sub><b>Dashboard</b> — health score do quadro, insights automáticos e ganhos em horas e R$.</sub></td>
+    <td width="50%"><img src="docs/screenshots/card.webp" alt="Card aberto"><br><sub><b>Card</b> — subtarefas, responsáveis, datas, recorrência, ganhos e comentários.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/metricas.webp" alt="Métricas de fluxo"><br><sub><b>Métricas de fluxo</b> — lead time, cycle time, throughput, WIP, CFD e previsão de entrega.</sub></td>
+    <td><img src="docs/screenshots/gantt.webp" alt="Gantt"><br><sub><b>Gantt</b> — linha do tempo por dia, semana ou mês, agrupada por coluna ou pessoa.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/calendario.webp" alt="Calendário"><br><sub><b>Calendário</b> — entregas do mês com feriados nacionais e datas comemorativas.</sub></td>
+    <td><img src="docs/screenshots/meu-painel.webp" alt="Meu Painel"><br><sub><b>Meu Painel</b> — seus números, suas equipes, conquistas e atividade.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/equipes.webp" alt="Equipes"><br><sub><b>Equipes</b> — quadros isolados, cargos por equipe, convites e pedidos de entrada.</sub></td>
+    <td><img src="docs/screenshots/login.webp" alt="Tela de login"><br><sub><b>Login</b> — acesso por e-mail, senha forte e recuperação por link.</sub></td>
+  </tr>
+</table>
 
-## 🧱 Stack
+### 🌙 Tema escuro e celular
+
+<table>
+  <tr>
+    <td width="72%"><img src="docs/screenshots/quadro-escuro.webp" alt="Quadro no tema escuro"></td>
+    <td width="28%" align="center"><img src="docs/screenshots/celular.webp" alt="SyncroFlow no celular"></td>
+  </tr>
+</table>
+
+São **8 temas** (claro, escuro, sage, dusk, sand, dracula, cyberpunk e abyss) e a interface se adapta ao celular.
+
+## 🦫 Conheça o Tobi
+
+O **Tobi** é o castor-engenheiro que acompanha o time. Ele apresenta o sistema no primeiro acesso, vive em **pixel art na barra lateral** — onde trabalha, toma café e reage ao quadro ("socorrooo, atrasou!") — e aparece nas horas de comemorar.
+
+<p align="center">
+  <img src="imagens/mascote/feliz.webp" alt="Tobi feliz" height="130">
+  <img src="imagens/mascote/esperto.webp" alt="Tobi com uma ideia" height="130">
+  <img src="imagens/mascote/joinha.webp" alt="Tobi fazendo joinha" height="130">
+  <img src="imagens/mascote/duvida.webp" alt="Tobi em dúvida" height="130">
+  <img src="imagens/mascote/atividades.webp" alt="Tobi com a prancheta" height="130">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/tour.webp" alt="Tour de boas-vindas com o Tobi" width="85%"><br>
+  <sub>O tour de boas-vindas destaca cada parte da interface, passo a passo.</sub>
+</p>
+
+## 🏆 Ligas e conquistas
+
+Toda semana, cada card concluído vale XP (bônus se foi no prazo). As pessoas sobem e descem por **10 ligas** de tema aquático:
+
+<p align="center">
+  <img src="imagens/ligas/girino.webp" alt="Girino" width="62" title="Girino">
+  <img src="imagens/ligas/peixe.webp" alt="Peixe" width="62" title="Peixe">
+  <img src="imagens/ligas/caranguejo.webp" alt="Caranguejo" width="62" title="Caranguejo">
+  <img src="imagens/ligas/tartaruga.webp" alt="Tartaruga" width="62" title="Tartaruga">
+  <img src="imagens/ligas/arraia.webp" alt="Arraia" width="62" title="Arraia">
+  <img src="imagens/ligas/polvo.webp" alt="Polvo" width="62" title="Polvo">
+  <img src="imagens/ligas/golfinho.webp" alt="Golfinho" width="62" title="Golfinho">
+  <img src="imagens/ligas/tubarao.webp" alt="Tubarão" width="62" title="Tubarão">
+  <img src="imagens/ligas/kraken.webp" alt="Kraken" width="62" title="Kraken">
+  <img src="imagens/ligas/leviata.webp" alt="Leviatã" width="62" title="Leviatã">
+  <br>
+  <sub>Girino → Peixe → Caranguejo → Tartaruga → Arraia → Polvo → Golfinho → Tubarão → Kraken → Leviatã</sub>
+</p>
+
+Além das ligas, há **98 conquistas individuais**, **13 troféus de equipe** e títulos para exibir no perfil.
+
+## ♿ Acessível de verdade
+
+<img src="docs/screenshots/acessibilidade.webp" alt="Painel de acessibilidade" width="100%">
+
+Um painel de acessibilidade sempre à mão, com perfis prontos (**baixa visão**, **leitura tranquila**, **foco no teclado**), tamanho de fonte, alto contraste, fonte mais legível, modo leitura, destaque de links e de foco, espaçamento de texto e redução de animações. Tudo também funciona pelo teclado.
+
+## 🧩 Recursos
+
+<table>
+  <tr>
+    <td valign="top" width="50%">
+
+**Quadro e cards**
+- Arrastar e soltar entre colunas, com WIP por coluna
+- Filtros, raias (swimlanes) e visões salvas
+- Subtarefas aninhadas com responsável e prazo
+- Comentários com respostas e reações
+- Etiquetas, prioridade, dependências entre cards
+- Campos personalizados e modelos de card
+- Cards recorrentes, arquivamento e aprovação
+- Seleção em massa e busca global (<kbd>Ctrl</kbd>+<kbd>K</kbd>)
+
+    </td>
+    <td valign="top" width="50%">
+
+**Gestão e análise**
+- Múltiplas equipes com cargos por equipe
+- Sprints, marcos e automações "quando… então…"
+- Dashboard com health score e insights
+- Métricas de fluxo e previsão de entrega
+- Gantt, calendário e "Meu Dia"
+- Férias e ausências com saldo por pessoa
+- Mural de avisos com agendamento
+- Exportação para CSV/Excel e relatório imprimível
+
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+
+**Segurança**
+- Login por e-mail e senha forte obrigatória
+- Senhas com bcrypt; limite de tentativas
+- Sessão httpOnly e proteção contra CSRF
+- Backups automáticos criptografados (AES-256-GCM)
+- Dados fora da raiz web em produção
+
+    </td>
+    <td valign="top">
+
+**Tempo real e praticidade**
+- Sincronização entre usuários a cada 5 s
+- Proteção contra edição simultânea do mesmo card
+- Notificações no sistema e (opcional) por e-mail
+- Atalhos: <kbd>N</kbd> novo card · <kbd>T</kbd> temas · <kbd>/</kbd> buscar
+- Nenhuma dependência externa para instalar
+
+    </td>
+  </tr>
+</table>
+
+## 🧱 Como é feito
 
 | Camada | Tecnologia |
 |---|---|
 | Backend | PHP 7.4+ com PDO — sem framework, sem Composer |
-| Banco | SQLite (modo WAL) |
-| Frontend | JavaScript em ES Modules nativos + CSS — sem framework, sem bundler |
+| Banco | SQLite em modo WAL (o schema se cria e se atualiza sozinho) |
+| Frontend | JavaScript em ES Modules nativos + CSS modular — sem bundler |
 | Sincronização | Polling a cada 5 s com *optimistic locking* por revisão |
-
-## 📁 Estrutura
+| Testes | `php tests/auth_test.php` · CI no GitHub Actions (PHP 7.4 e 8.3) |
 
 ```
-├── *.php            # páginas: login, cadastro, app, admin…
-├── api/             # endpoints JSON (um arquivo por área)
-├── lib/             # regras de negócio, banco, autenticação
-├── partials/        # pedaços de página reutilizados
-├── js/  css/        # frontend
-├── imagens/         # logo, ícones, ligas e mascote
-├── scripts/         # manutenção via linha de comando
-├── tests/           # testes automatizados
-└── docs/            # documentação
+├── *.php         páginas (login, cadastro, app, admin…)
+├── api/          endpoints JSON, um arquivo por área
+├── lib/          regras de negócio, banco e autenticação
+├── js/  css/     frontend
+├── imagens/      logo, ícones, ligas e o Tobi
+├── scripts/      manutenção pela linha de comando
+├── tests/        testes automatizados
+└── docs/         documentação
 ```
 
 ## 📚 Documentação
 
-| Documento | Conteúdo |
+| | |
 |---|---|
-| [Manual do usuário](docs/MANUAL_DO_USUARIO.md) | Como usar o quadro, cards, equipes e demais telas |
+| [Manual do usuário](docs/MANUAL_DO_USUARIO.md) | Como usar o quadro, cards, equipes e as demais telas |
 | [Deploy](docs/DEPLOY.md) | Publicar em produção (Apache, IIS ou nginx) |
 | [Arquitetura](docs/ARQUITETURA.md) | Visão C4, estrutura de pastas e fluxos principais |
-| [Modelo de dados](docs/MODELO_DE_DADOS.md) | Diagrama ER e grupos de tabelas |
+| [Modelo de dados](docs/MODELO_DE_DADOS.md) | Diagrama entidade-relacionamento |
 | [API](docs/API.md) | Endpoints e ações |
 | [Autenticação](docs/AUTENTICACAO.md) | Login, cadastro, recuperação de senha e limites |
 | [Segurança](docs/SEGURANCA.md) | Criptografia, chaves e onde ficam os dados |
-| [Decisões técnicas](docs/DECISOES_TECNICAS.md) | Registros de decisão de arquitetura (ADRs) |
-
-## 🔐 Configuração e segredos
-
-- **Nunca** versione o `config.json` — ele guarda segredos (SMTP etc.) e já está no `.gitignore`.
-- Banco, chave de criptografia, backups e logs ficam em `data/` localmente; em produção, aponte-os para fora da raiz web (veja o [Deploy](docs/DEPLOY.md)).
-- O envio de e-mail é **opcional**: com `email.enabled: false` tudo funciona, exceto a recuperação de senha por e-mail.
+| [Decisões técnicas](docs/DECISOES_TECNICAS.md) | Por que o sistema é do jeito que é |
 
 ## 🤝 Contribuindo
 
-Veja o [CONTRIBUTING.md](CONTRIBUTING.md) para o fluxo de trabalho e o padrão de commits.
-
-## 👤 Autor
-
-Desenvolvido por **Aurelio Sousa** como projeto de portfólio e Trabalho de Conclusão de Curso (TCC).
+Sugestões e melhorias são bem-vindas! O [CONTRIBUTING.md](CONTRIBUTING.md) explica como rodar, testar e o padrão de commits.
 
 ## 📄 Licença
 
-Distribuído sob a licença **MIT**. Veja [LICENSE](LICENSE).
+[MIT](LICENSE) © Aurelio Sousa
