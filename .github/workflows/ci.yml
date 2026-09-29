@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    name: Lint PHP + testes
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: [ '7.4', '8.3' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: pdo_sqlite, sqlite3, mbstring, openssl, fileinfo
+          coverage: none
+
+      - name: Lint de sintaxe (php -l) em todos os arquivos PHP
+        run: |
+          find . -name '*.php' -not -path './data/*' -print0 \
+            | xargs -0 -n1 php -l
+
+      - name: Testes de autenticação
+        run: php tests/auth_test.php

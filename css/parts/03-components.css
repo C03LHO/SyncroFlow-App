@@ -1,0 +1,285 @@
+/* ═════════════ BUTTONS ═════════════ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-size: 13px; font-weight: 600;
+  letter-spacing: 0.1px;
+  cursor: pointer; white-space: nowrap;
+  transition: transform var(--transition-fast), box-shadow var(--transition),
+              background var(--transition), border-color var(--transition), color var(--transition);
+}
+.btn svg { width: 14px; height: 14px; }
+.btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.btn:active { transform: scale(0.97); }   /* "press" estilo iOS */
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; }
+
+.btn-primary {
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-2) 100%);
+  color: var(--on-primary, #fff);
+  border-color: var(--primary-2);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset, 0 2px 6px rgba(0, 121, 109, 0.20);
+}
+.btn-primary:hover {
+  background: linear-gradient(180deg, var(--primary-2) 0%, var(--primary-deep) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset, 0 6px 14px rgba(0, 121, 109, 0.32);
+}
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover { background: var(--surface-2); border-color: var(--primary); color: var(--primary); }
+.btn-accent {
+  background: linear-gradient(180deg, var(--brand) 0%, var(--brand-dark) 100%);
+  color: #2A1F00;
+  border-color: var(--brand-dark);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset, 0 2px 6px rgba(255, 193, 0, 0.25);
+}
+.btn-accent:hover { transform: translateY(-1px); box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset, 0 6px 14px rgba(255, 193, 0, 0.35); }
+.btn-danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+.btn-danger:hover { background: #A52830; }
+.btn-ghost { background: transparent; color: var(--text-2); border-color: transparent; }
+.btn-ghost:hover { background: var(--surface-2); color: var(--text); }
+.btn-sm { padding: 5px 10px; font-size: 11.5px; }
+
+/* ═════════════ FORMS ═════════════
+   Regra abrangente: todo input de texto, textarea e select fica no tema —
+   mesmo sem classe ou sem atributo type. Excluímos controles especiais
+   (checkbox, radio, range, file, color) que têm aparência própria. */
+.input, .select, textarea, select,
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]) {
+  width: 100%;
+  padding: 9px 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+}
+/* Selects com seta própria (sem o visual nativo do navegador) */
+select, .select {
+  -webkit-appearance: none; -moz-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='12'%20height='12'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23888'%20stroke-width='3'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M6%209l6%206%206-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  padding-right: 30px;
+  cursor: pointer;
+}
+/* garante a seta mesmo em selects pequenos/inline do app */
+select.adm-select-inline, select.board-period-select { padding-right: 26px; background-position: right 7px center; }
+select option { background: var(--surface); color: var(--text); }
+textarea { resize: vertical; min-height: 70px; }
+.input:focus, .select:focus, textarea:focus, select:focus,
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+/* Selo de contagem (ex.: pedidos de entrada pendentes no botão "Gerenciar equipe"). */
+.req-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 999px; background: var(--danger, #e5484d); color: #fff;
+  font-size: 11px; font-weight: 700; line-height: 1; vertical-align: middle;
+}
+
+.field { margin-bottom: 12px; }
+.field label {
+  display: block;
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-2);
+  margin-bottom: 5px;
+}
+.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.form-grid .full { grid-column: 1 / -1; }
+
+/* ═════════════ KPI STRIP (grid — preenche toda largura) ═════════════ */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(124px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+/* Telas menores (notebook): KPIs ainda mais compactos */
+@media (max-width: 1180px) {
+  .kpi-strip { grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: 8px; }
+  .kpi { padding: 8px 10px !important; }
+  .kpi-value { font-size: 17px !important; }
+}
+@media (max-width: 720px) {
+  .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+}
+.kpi-bar { margin-top: 6px; height: 4px; border-radius: 999px; background: var(--surface-3); overflow: hidden; }
+.kpi-bar-fill { height: 100%; border-radius: 999px; background: var(--primary); transition: width .6s cubic-bezier(.22,.61,.36,1); }
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  display: flex; flex-direction: column; gap: 2px;
+  position: relative; overflow: hidden;
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.kpi::before {
+  content: ""; position: absolute;
+  left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--primary);
+  opacity: 0; transition: opacity var(--transition);
+}
+.kpi:hover { box-shadow: var(--shadow-sm); border-color: var(--border-strong); }
+.kpi:hover::before, .kpi.success::before, .kpi.danger::before, .kpi.warning::before { opacity: 1; }
+.kpi.success::before { background: var(--success); }
+.kpi.danger::before  { background: var(--danger); }
+.kpi.warning::before { background: var(--warning); }
+.kpi-label {
+  font-size: 10px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;
+}
+.kpi-value {
+  font-size: 20px; font-weight: 800;
+  color: var(--text); line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.kpi.danger  .kpi-value { color: var(--danger); }
+.kpi.warning .kpi-value { color: var(--warning); }
+.kpi.success .kpi-value { color: var(--success); }
+.kpi-sub {
+  font-size: 11px; color: var(--text-muted);
+  font-weight: 600;
+}
+.kpi-icon {
+  position: absolute; top: 14px; right: 14px;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+/* "+ mais / − menos" do KPI strip — link pequeno e discreto abaixo do strip */
+.kpi-more-row { display: flex; justify-content: flex-end; margin: -8px 0 12px; }
+.kpi-more {
+  display: inline-flex; align-items: center; gap: 4px;
+  border: none; background: transparent;
+  color: var(--text-muted); font-size: 12px; font-weight: 700;
+  cursor: pointer; padding: 4px 10px; border-radius: 999px;
+  white-space: nowrap;
+  transition: color var(--transition), background var(--transition);
+}
+.kpi-more:hover { color: var(--primary); background: var(--primary-soft); }
+
+.kpi-icon.brand   { background: var(--primary-soft); color: var(--primary); }
+.kpi-icon.danger  { background: var(--danger-soft);  color: var(--danger); }
+.kpi-icon.warning { background: var(--warning-soft); color: var(--warning); }
+.kpi-icon.success { background: var(--success-soft); color: var(--success); }
+
+/* ═════════════ TOPBAR LAYOUT (uma linha: [título · equipe] · busca · ações) ═════════════ */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 22px;
+  flex-wrap: nowrap;
+}
+.topbar .menu-btn,
+.topbar .page-title-block,
+.topbar .team-switcher { flex: 0 0 auto; }
+.page-title-block { max-width: 220px; }
+.topbar-center {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  min-width: 0;          /* permite encolher sem empurrar as ações */
+}
+.topbar .search-input {
+  width: 100%; max-width: 460px;
+}
+.topbar-actions {
+  flex: 0 0 auto;
+  margin-left: auto;     /* gruda as ações à direita */
+  flex-wrap: nowrap;
+}
+/* Divisória sutil entre título e seletor de equipe */
+.topbar .team-switcher::before {
+  content: ""; display: inline-block;
+  width: 1px; height: 26px; margin-right: 6px;
+  background: var(--border); vertical-align: middle;
+}
+@media (max-width: 1080px) {
+  .page-title-block .crumb { display: none; }
+}
+@media (max-width: 920px) {
+  .topbar-center { display: none; }   /* busca vira atalho "/" no mobile */
+  .page-title-block { max-width: 150px; }
+}
+@media (max-width: 720px) {
+  .conn-state .version-label,
+  .conn-state #conn-text { display: none; }   /* mantém só o ponto de status */
+}
+
+/* board-period-wrap */
+.board-period-wrap {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px 4px 8px;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+  font-size: 12px; color: var(--primary-deep);
+  flex-shrink: 0;
+}
+.board-period-label { font-weight: 700; font-size: 11px; letter-spacing: 0.02em; white-space: nowrap; }
+.board-period-select {
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--primary) !important;
+  border-radius: 6px !important;
+  padding: 3px 24px 3px 8px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer; outline: none;
+  width: auto !important; min-width: auto !important;
+}
+
+/* chip-removable */
+.chip-removable {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  background: var(--primary-soft);
+  color: var(--primary-deep);
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+  font-size: 11.5px; font-weight: 600;
+}
+.chip-removable button {
+  background: transparent; border: none;
+  color: inherit; cursor: pointer;
+  font-size: 14px; line-height: 1; padding: 0 2px;
+}
+.chip-removable button:hover { color: var(--danger); }
+.filter-divider {
+  width: 1px; height: 22px;
+  background: var(--border-strong);
+}
+
+/* WIP over */
+.wip-over { color: var(--danger); background: var(--danger-soft); }
+
+/* column-empty placeholder */
+.column-empty {
+  text-align: center;
+  padding: 30px 12px;
+  color: var(--text-soft);
+  font-size: 12px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  margin: 4px;
+}
+

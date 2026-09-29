@@ -1,0 +1,49 @@
+# =========================================================
+# SyncroFlow — Configuração raiz
+# Proteção, charset e cache de estáticos.
+# =========================================================
+
+Options -Indexes
+DefaultLanguage pt-BR
+AddDefaultCharset UTF-8
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "same-origin"
+</IfModule>
+
+# Bloqueia acesso direto a arquivos sensíveis
+<FilesMatch "^(config\.json|config\.local\.json|.*\.db|.*\.db\.enc|.*\.log|.*\.log\.enc|.*\.lock|.*\.key|\.syncroflow\.key)$">
+    Require all denied
+</FilesMatch>
+
+# Scripts de desenvolvimento/manutenção — NUNCA acessíveis pela web em produção.
+# (Continuam disponíveis via linha de comando: php scripts/init_db.php etc.)
+<FilesMatch "^(seed_demo|init_db|diagnostico|restore_backup)\.php$">
+    Require all denied
+</FilesMatch>
+
+# Bloqueia a pasta data/ local (criada quando se roda em dev)
+<IfModule mod_rewrite.c>
+    RewriteRule ^data/ - [F,L]
+</IfModule>
+
+# Cache de estáticos (curto para CSS, longo para imagens)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 hour"
+    ExpiresByType application/javascript "access plus 0 seconds"
+    ExpiresByType image/png "access plus 7 days"
+    ExpiresByType image/webp "access plus 7 days"
+    ExpiresByType image/jpeg "access plus 7 days"
+    ExpiresByType image/svg+xml "access plus 7 days"
+</IfModule>
+
+# Módulos JS (ES modules): o navegador deve REVALIDAR sempre (304 se não
+# mudou). Sem isso, atualizações do sistema só apareciam após Ctrl+Shift+R.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|mjs)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+</IfModule>

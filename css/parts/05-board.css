@@ -1,0 +1,316 @@
+/* ═════════════ FILTER BAR (compacta) ═════════════ */
+.filter-bar {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-xs);
+}
+.filter-bar input,
+.filter-bar select {
+  width: auto;
+  min-width: 120px;
+  max-width: 220px;
+  padding: 7px 28px 7px 12px;
+  font-size: 12.5px;
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+}
+.filter-bar select:hover { border-color: var(--border-strong); }
+.filter-bar-collapsed { margin-bottom: 14px; }
+.f-bar-hide-btn { margin-left: auto; }   /* empurra "Ocultar" para a direita */
+
+/* Menu "Gerenciar" do quadro — 1 só CTA de gestão (progressive disclosure) */
+.board-manage-wrap { position: relative; display: inline-flex; }
+.board-manage-pop {
+  position: absolute; top: calc(100% + 8px); left: 0; z-index: 40;
+  min-width: 210px; padding: 6px;
+  background: var(--surface); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 2px;
+  animation: popIn .2s var(--ease-out, ease-out);
+}
+.bmp-item {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 9px 12px; text-align: left;
+  border: none; background: transparent; border-radius: var(--radius-md);
+  color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.bmp-item:hover { background: var(--surface-2); }
+
+/* Menu "⋯" por card de equipe (reusa .board-manage-pop, mas abre à direita e
+   PARA CIMA — o botão fica na última linha do card, então abrir para baixo
+   ficaria cortado/sobre o card de baixo). */
+.eqs-more-wrap { position: relative; margin-left: auto; }
+.eqs-more-pop { left: auto; right: 0; top: auto; bottom: calc(100% + 6px); min-width: 180px; }
+
+/* Popover "Filtros" — agrupa os filtros secundários (estilo iOS, vidro fosco) */
+.filter-more-wrap { position: relative; display: inline-flex; }
+.filter-more-pop {
+  position: absolute; top: calc(100% + 8px); left: 0; z-index: 40;
+  min-width: 250px; padding: 12px;
+  background: var(--surface);          /* sólido — sempre legível */
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 10px;
+  animation: popIn .2s var(--ease-out, ease-out);
+}
+.fmp-row { display: flex; flex-direction: column; gap: 5px; }
+.fmp-row > label { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+.fmp-custom { display: flex; flex-direction: column; gap: 10px; }
+.filter-more-pop select { width: 100% !important; min-width: 0 !important; max-width: none !important; }
+.filter-bar input[type="search"] { width: 240px; max-width: 100%; }
+.filter-bar input:focus, .filter-bar select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: var(--primary);
+}
+.filter-bar .btn { padding: 6px 12px; font-size: 12px; }
+
+/* ═════════════ BOARD / KANBAN ═════════════ */
+.board-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-start;
+  padding-bottom: 12px;
+}
+
+/* ─── Swimlanes / raias (agrupamento do Quadro) ─── */
+.board-swimlanes { display: flex; flex-direction: column; gap: 12px; padding-bottom: 12px; }
+.swimlane {
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--surface-2); overflow: hidden; box-shadow: var(--shadow-xs);
+}
+.swimlane-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; cursor: pointer; user-select: none;
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  border-bottom: 1px solid var(--border);
+}
+.swimlane-header:hover { background: var(--surface-3); }
+.swimlane-chevron { color: var(--text-muted); font-size: 12px; transition: transform .15s ease; flex: 0 0 auto; }
+.swimlane.collapsed .swimlane-chevron { transform: rotate(-90deg); }
+.swimlane-label { font-size: 13.5px; font-weight: 800; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.swimlane-count { font-size: 11px; font-weight: 700; background: var(--primary-soft); color: var(--primary); padding: 2px 9px; border-radius: 999px; flex: 0 0 auto; }
+.swimlane-body { display: flex; gap: 0; overflow-x: auto; }
+.swimlane.collapsed .swimlane-body { display: none; }
+.swimlane-col { flex: 1 1 0; min-width: 200px; padding: 10px; border-right: 1px solid var(--border); }
+.swimlane-col:last-child { border-right: none; }
+.swimlane-col-head {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--text-muted); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
+}
+.swimlane-col-head .column-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
+.swimlane-col-n { margin-left: auto; color: var(--text-2); }
+.swimlane-col .column-body { min-height: 56px; gap: 8px; padding: 0; overflow: visible; }
+.swimlane-col .card-tile { flex: 0 0 auto; }
+.column {
+  flex: 1 1 260px;
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex; flex-direction: column;
+  /* coluna cresce para baixo conforme o número de cards (a página rola, não a coluna) */
+  min-width: 0;
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--transition), box-shadow var(--transition), flex-basis var(--transition);
+}
+.column:hover { box-shadow: var(--shadow-sm); }
+
+/* ── Coluna recolhida ── */
+.column-header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.col-collapse-btn {
+  width: 22px; height: 22px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 17px; line-height: 1; font-weight: 700;
+  background: transparent;
+  transition: background var(--transition), color var(--transition);
+}
+.col-collapse-btn:hover { background: var(--surface-3); color: var(--text); }
+.column.is-collapsed {
+  flex: 0 0 46px; width: 46px; min-width: 46px; cursor: pointer;
+}
+.column.is-collapsed:hover { border-color: var(--primary); }
+.column.is-collapsed .column-header {
+  flex-direction: column; height: 100%; justify-content: flex-start;
+  align-items: center; gap: 12px; padding: 12px 6px; border-bottom: none; cursor: pointer;
+}
+.column.is-collapsed .column-title-wrap { flex-direction: column; gap: 10px; }
+.column.is-collapsed .column-title {
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  white-space: nowrap; max-height: 60vh; overflow: hidden; text-overflow: ellipsis;
+}
+.column.is-collapsed .column-header-right { flex-direction: column-reverse; gap: 10px; }
+.column.is-collapsed .column-body { display: none; }
+.column-header {
+  padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.column-title-wrap { display: flex; align-items: center; gap: 10px; }
+.column-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--text-soft);
+  flex-shrink: 0;
+}
+.column-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-2);
+}
+.column-count {
+  background: var(--surface-3);
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.column-body {
+  padding: 10px;
+  flex: 1;
+  overflow: visible;           /* sem rolagem interna — a coluna cresce para baixo */
+  display: flex; flex-direction: column; gap: 8px;
+  transition: background var(--transition);
+  min-height: 80px;
+}
+.column-body.drag-over { background: var(--primary-soft); }
+.column-empty {
+  text-align: center;
+  padding: 30px 12px;
+  color: var(--text-soft);
+  font-size: 12px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  margin: 4px;
+}
+
+.card-tile, .card {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 145%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  cursor: grab;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  box-shadow: var(--shadow-xs);
+  position: relative;
+  overflow: hidden;
+  animation: popIn var(--motion-pop) ease-out;
+}
+/* Card do quadro não encolhe dentro da coluna flex — senão o rodapé
+   (subtarefas/comentários) fica cortado pelo overflow:hidden quando a
+   coluna tem muitos cards. A coluna rola (overflow-y:auto) em vez disso. */
+.column-body > .card-tile { flex: 0 0 auto; }
+[data-theme="light"] .card-tile,
+[data-theme="light"] .card {
+  box-shadow: 0 1px 4px rgba(23, 33, 42, 0.08), 0 1px 2px rgba(23, 33, 42, 0.04);
+}
+.card-tile:hover, .card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+[data-theme="light"] .card-tile:hover,
+[data-theme="light"] .card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(14, 92, 86, 0.14), 0 2px 6px rgba(14, 92, 86, 0.08);
+}
+.card-tile:active, .card:active { cursor: grabbing; }
+.card-tile.dragging, .card.dragging { opacity: .4; cursor: grabbing; }
+.card-tile h4, .card h4 {
+  font-size: 13.5px;
+  color: var(--text);
+  margin: 0 0 8px;
+  line-height: 1.35;
+  font-weight: 600;
+}
+.card-meta {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  font-size: 11px; color: var(--text-muted);
+  align-items: center;
+}
+.card-meta .chip {
+  background: var(--surface-3);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.card-meta .priority-alta    { color: var(--warning); }
+.card-meta .priority-urgente { background: var(--danger); color: #fff; }
+.card-meta .due-overdue      { color: var(--danger); font-weight: 700; }
+
+.progress-bar {
+  height: 4px;
+  background: var(--surface-3);
+  border-radius: 4px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.progress-bar > div {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--sf-green-light) 100%);
+  transition: width var(--transition-slow);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(.96) translateY(4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+
+/* Visões salvas (filtros) */
+.chip-view {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 999px; cursor: pointer;
+  background: var(--brand-soft); color: var(--brand-deep, var(--brand));
+  border: 1px solid var(--brand); font-size: 12px; font-weight: 700;
+}
+.chip-view:hover { filter: brightness(0.97); }
+.chip-view-x { border: 0; background: transparent; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; padding: 0 0 0 2px; }
+.ct-gain.over { color: var(--danger); font-weight: 700; }
+
+/* ═══ Ações em massa (multi-seleção) ═══ */
+#f-select-mode.is-active { background: var(--brand-soft); color: var(--brand-deep, var(--brand)); border-color: var(--brand); }
+
+/* Marca de seleção no card — só aparece no modo seleção */
+.ct-check {
+  position: absolute; top: 8px; right: 8px; z-index: 4;
+  width: 20px; height: 20px; border-radius: 50%;
+  display: none; align-items: center; justify-content: center;
+  background: var(--surface); border: 2px solid var(--border-strong);
+  color: transparent; font-size: 12px; font-weight: 900; line-height: 1;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+.board--select .ct-check { display: inline-flex; }
+.board--select .card-tile { cursor: pointer; }
+.board--select .card-tile:hover { border-color: var(--brand); }
+.card-tile.is-selected { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand) inset; }
+.card-tile.is-selected .ct-check { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+/* Barra flutuante de ações em massa */
+.bulk-bar {
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(140%);
+  z-index: 60; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 10px 14px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg, 0 8px 30px rgba(0,0,0,0.25));
+  transition: transform var(--transition), opacity var(--transition);
+  opacity: 0; pointer-events: none; max-width: calc(100vw - 32px);
+}
+.bulk-bar.is-on { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+.bulk-count { font-size: 13px; font-weight: 700; color: var(--text); padding-right: 4px; }
+.bulk-count strong { color: var(--brand-deep, var(--brand)); }
+.bulk-sep { width: 1px; align-self: stretch; background: var(--border); margin: 2px 2px; }

@@ -1,0 +1,563 @@
+/* ═════════════ CALENDÁRIO (grid mensal) ═════════════ */
+.cal-page {
+  display: flex; flex-direction: column;
+  gap: 14px;
+  max-width: 1760px; margin: 0 auto;
+}
+.cal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-xs);
+}
+.cal-title {
+  font-size: 18px; font-weight: 700;
+  color: var(--text);
+  text-transform: capitalize;
+}
+.cal-nav-btn {
+  width: 36px; height: 36px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 16px; font-weight: 700;
+  transition: all var(--transition);
+}
+.cal-nav-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  /* 1 linha de cabeçalho (auto) + 6 semanas com altura FIXA → sem sanfona */
+  grid-template-rows: auto repeat(6, 118px);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+}
+.cal-day-header {
+  background: var(--surface-2);
+  padding: 8px 10px;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  text-align: center;
+}
+.cal-day {
+  background: var(--surface);
+  min-height: 0; height: 100%;
+  padding: 6px 8px;
+  display: flex; flex-direction: column; gap: 3px;
+  overflow: hidden;            /* conteúdo extra é cortado (há "+N mais") */
+  transition: background var(--transition);
+}
+.cal-day:hover { background: var(--surface-2); }
+.cal-day.muted { background: var(--surface-2); opacity: .55; }
+.cal-day.today {
+  background: var(--primary-soft);
+  box-shadow: inset 0 0 0 2px var(--primary);   /* anel claro — destaca de fds/feriado em qualquer tema */
+}
+.cal-day.today .cal-day-num {
+  background: var(--primary); color: #fff; font-weight: 800;
+  border-radius: 999px; min-width: 22px; height: 22px; padding: 0 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.cal-day-num {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.cal-card-mini {
+  font-size: 11px;
+  padding: 3px 6px;
+  background: var(--surface-2);
+  border-left: 2px solid var(--primary);
+  border-radius: 3px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.cal-card-mini { border-left-width: 3px; }
+.cal-card-mini:hover { background: var(--primary-soft); transform: translateX(1px); }
+.cal-card-mini.overdue { color: var(--danger); font-weight: 600; }
+.cal-card-mini.done    { opacity: .6; text-decoration: line-through; }
+.cal-more-link {
+  font-size: 10.5px;
+  color: var(--primary);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+/* Calendário: header refinado + modo switch */
+.cal-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+}
+.cal-nav-group { display: flex; gap: 6px; }
+.cal-title-block { text-align: center; text-transform: capitalize; }
+
+.cal-mode-switch {
+  display: inline-flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 3px;
+}
+.cal-mode-switch button {
+  padding: 6px 14px; font-size: 12px; font-weight: 600;
+  color: var(--text-muted);
+  border: none; background: transparent;
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: all var(--transition);
+}
+.cal-mode-switch button:hover { color: var(--text); }
+.cal-mode-switch button.active {
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-2) 100%);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 121, 109, 0.30);
+}
+
+.cal-summary {
+  display: flex; gap: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  flex-wrap: wrap;
+}
+.cal-summary-item { font-size: 13px; color: var(--text-2); }
+.cal-summary-item strong { color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* Calendário Mês: dia */
+.cal-day.holiday {
+  background: linear-gradient(180deg, var(--brand-soft) 0%, var(--surface) 60%);
+}
+.cal-day.weekend:not(.muted):not(.today):not(.holiday) {
+  background: rgba(0, 0, 0, 0.02);
+}
+.cal-day-header.weekend { color: var(--danger); }
+.cal-day-head { display: flex; align-items: center; justify-content: space-between; }
+.cal-day-flag { font-size: 11px; }
+.cal-day-holiday-name {
+  font-size: 9px; font-weight: 800;
+  text-transform: uppercase;
+  color: var(--brand-dark);
+  letter-spacing: 0.3px;
+  background: var(--brand-soft);
+  padding: 2px 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Filtros do calendário (cidade + tipo) ── */
+.cal-filters {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 8px 2px 12px;
+}
+.cal-filter-city {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700; color: var(--text-2);
+}
+/* Combobox de cidade (pesquisável, temático, não deforma a página) */
+.cal-city-combo { position: relative; display: inline-block; min-width: 210px; }
+.cal-city-input {
+  width: 100%; box-sizing: border-box; min-height: 36px;
+  padding: 8px 28px 8px 12px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); font-size: 13px; font-family: inherit; font-weight: 600;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.cal-city-input::placeholder { color: var(--text-muted); font-weight: 500; }
+.cal-city-input:hover { border-color: var(--primary); }
+.cal-city-input:focus { outline: none; border-color: var(--primary); box-shadow: var(--shadow-glow); }
+.cal-city-caret { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted); font-size: 11px; }
+.cal-city-list {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 60;
+  max-height: 260px; overflow-y: auto; display: none;
+  background: var(--surface); border: 1px solid var(--border-strong, var(--border)); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg, 0 10px 30px rgba(0,0,0,0.22));
+}
+.cal-city-combo.open .cal-city-list { display: block; }
+.cal-city-opt { padding: 8px 12px; cursor: pointer; font-size: 13px; color: var(--text); white-space: nowrap; }
+.cal-city-opt:hover { background: var(--brand-soft, var(--surface-2)); }
+.cal-city-opt.is-sel { font-weight: 700; color: var(--brand-deep, var(--brand)); background: var(--brand-soft, var(--surface-2)); }
+.cal-city-empty { padding: 9px 12px; color: var(--text-muted); font-size: 12.5px; }
+.cal-kinds { display: flex; gap: 6px; flex-wrap: wrap; }
+.cal-kind {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 11px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text-muted); font-size: 12px; font-weight: 700;
+  transition: all var(--transition); opacity: .5;
+}
+.cal-kind.on {
+  opacity: 1; color: var(--text);
+  border-color: var(--k); box-shadow: inset 0 0 0 1px var(--k);
+}
+.cal-kind:hover { transform: translateY(-1px); }
+
+/* ── Chip de feriado dentro do dia (rótulo + cidade visíveis) ── */
+.cal-hol-chip {
+  display: flex; align-items: center; gap: 4px;
+  background: var(--surface-2); border-left: 3px solid var(--danger);
+  border-radius: 3px; padding: 1px 5px; margin-top: 2px;
+  font-size: 9.5px; line-height: 1.3; overflow: hidden;
+}
+.cal-hol-name {
+  font-weight: 700; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;
+}
+.cal-hol-city {
+  font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .3px;
+  color: var(--text-muted); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 999px; padding: 0 5px; white-space: nowrap;
+}
+.cal-agenda-holiday { display: flex; align-items: center; gap: 8px; padding-left: 8px; }
+
+/* ⚽ Copa 2026 — dia de jogo com tema comemorativo verde/amarelo */
+.cal-day.copa {
+  background:
+    linear-gradient(135deg, rgba(0,151,57,0.16) 0%, rgba(255,223,0,0.16) 100%),
+    var(--surface);
+  position: relative; overflow: hidden;
+}
+.cal-day.copa.copa-brazil {
+  background:
+    linear-gradient(135deg, rgba(0,151,57,0.30) 0%, rgba(255,223,0,0.30) 55%, rgba(0,39,118,0.20) 100%),
+    var(--surface);
+  box-shadow: inset 0 0 0 2px rgba(255,223,0,0.55);
+}
+.cal-day.copa::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(circle, #ffdf00 1.5px, transparent 2px),
+    radial-gradient(circle, #009739 1.5px, transparent 2px);
+  background-size: 14px 14px, 18px 18px;
+  background-position: 0 0, 7px 9px;
+  opacity: 0.16; animation: copaSparkle 4s linear infinite;
+}
+@keyframes copaSparkle { 0%{background-position:0 0,7px 9px} 100%{background-position:0 28px,7px 37px} }
+.cal-day-copa-name {
+  position: relative; z-index: 1;
+  font-size: 9px; font-weight: 800; letter-spacing: .2px;
+  color: #0a7d33;
+  background: linear-gradient(90deg, rgba(0,151,57,0.18), rgba(255,223,0,0.22));
+  padding: 2px 6px; border-radius: 3px; margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cal-day-copa-name b { color: #0a5c8a; }
+/* Legibilidade nos temas ESCUROS: texto do jogo claro + horário em azul claro */
+[data-theme="dark"] .cal-day-copa-name,
+[data-theme="dracula"] .cal-day-copa-name,
+[data-theme="cyberpunk"] .cal-day-copa-name,
+[data-theme="abyss"] .cal-day-copa-name,
+[data-theme="dusk"] .cal-day-copa-name {
+  color: #6ee7a0;
+  background: linear-gradient(90deg, rgba(0,151,57,0.32), rgba(255,223,0,0.18));
+}
+[data-theme="dark"] .cal-day-copa-name b,
+[data-theme="dracula"] .cal-day-copa-name b,
+[data-theme="cyberpunk"] .cal-day-copa-name b,
+[data-theme="abyss"] .cal-day-copa-name b,
+[data-theme="dusk"] .cal-day-copa-name b { color: #7fd6ff; }
+
+/* Banner do próximo jogo do Brasil (#6 — só com Modo Copa ligado) */
+.copa-banner {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 14px; margin-bottom: 12px;
+  border-radius: var(--radius); border: 1px solid var(--border);
+  background: linear-gradient(90deg, rgba(0,156,59,.14), rgba(255,223,0,.12) 60%, rgba(0,39,118,.14));
+  font-size: 13px;
+}
+.copa-banner-flag { font-size: 18px; }
+.copa-banner-label { font-weight: 800; text-transform: uppercase; letter-spacing: .4px; font-size: 11px; color: var(--text-muted); }
+.copa-banner-game { color: var(--text); }
+.copa-banner-when { color: var(--text-muted); }
+.copa-banner-score {
+  margin-left: auto; font-weight: 800; color: #fff;
+  background: var(--success, #1a9d4e); padding: 2px 10px; border-radius: 999px; font-size: 13px;
+}
+
+/* Calendário Ano: 12 mini meses */
+.cal-year-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.cal-mini-month {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition);
+}
+.cal-mini-month:hover { border-color: var(--primary); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.cal-mini-current {
+  border-color: var(--primary);
+  background: linear-gradient(180deg, var(--primary-soft) 0%, var(--surface) 30%);
+}
+.cal-mini-title {
+  font-size: 13px; font-weight: 800;
+  color: var(--text);
+  margin-bottom: 10px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.cal-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.cal-mini-day-h {
+  font-size: 9px; font-weight: 800;
+  text-align: center;
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
+  padding: 2px 0;
+}
+.cal-mini-day {
+  text-align: center;
+  font-size: 11px;
+  padding: 3px 0;
+  color: var(--text-2);
+  border-radius: 3px;
+  font-variant-numeric: tabular-nums;
+  position: relative;
+}
+.cal-mini-day.today {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+}
+.cal-mini-day.holiday {
+  color: var(--brand-dark);
+  font-weight: 800;
+}
+.cal-mini-day.has-cards::after {
+  content: ""; position: absolute;
+  bottom: 1px; left: 50%;
+  width: 4px; height: 4px;
+  background: var(--primary);
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+/* Calendário Agenda */
+.cal-agenda { display: flex; flex-direction: column; gap: 14px; }
+.cal-agenda-group {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-xs);
+}
+.cal-agenda-group.today { border-color: var(--primary); }
+.cal-agenda-date {
+  text-align: center;
+  border-right: 1px solid var(--border);
+  padding-right: 14px;
+}
+.cal-agenda-day {
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.cal-agenda-group.today .cal-agenda-day { color: var(--primary); }
+.cal-agenda-weekday {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.cal-agenda-today-pill {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+.cal-agenda-items { display: flex; flex-direction: column; gap: 6px; }
+.cal-agenda-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.cal-agenda-item:hover { border-color: var(--primary); transform: translateX(2px); }
+.cal-agenda-item.done { opacity: 0.65; }
+.cal-agenda-item.overdue { border-left: 3px solid var(--danger); }
+.cal-agenda-holiday {
+  background: var(--brand-soft);
+  border-color: var(--brand);
+  cursor: default;
+  color: var(--brand-deep);
+}
+
+/* ═════════════ TROFÉUS / CONQUISTAS ═════════════ */
+.trophy-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.trophy-summary-card {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  position: relative; overflow: hidden;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition);
+}
+.trophy-summary-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.trophy-summary-num {
+  font-size: 30px; font-weight: 800;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.trophy-summary-lbl {
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text); margin-top: 2px;
+}
+.trophy-summary-sub {
+  font-size: 11px; color: var(--text-muted); margin-top: 2px;
+}
+.trophy-progress-bar {
+  height: 5px;
+  background: var(--surface-3);
+  border-radius: 999px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.trophy-progress-bar > div {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--brand) 100%);
+  transition: width var(--transition-slow);
+}
+
+.trophy-section { margin-bottom: 14px; }
+.trophy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+.trophy-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  text-align: center;
+  position: relative;
+  transition: all var(--transition);
+  cursor: default;
+}
+.trophy-card.locked { opacity: 0.35; filter: grayscale(1); }
+.trophy-card.is-hidden { opacity: 0.55; filter: grayscale(.6); }
+
+/* Conquistas no perfil (Usuários) — dropdown recolhível por raridade */
+.prof-ach-dd .prof-ach-sum { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; }
+.prof-ach-dd .prof-ach-sum::-webkit-details-marker { display: none; }
+.prof-ach-caret { margin-left: auto; color: var(--text-muted); transition: transform .15s ease; }
+.prof-ach-dd[open] .prof-ach-caret { transform: rotate(180deg); }
+.prof-ach-body { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+.prof-ach-rar { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; color: var(--text-2); padding: 2px 0 6px 8px; margin-bottom: 6px; }
+.trophy-card.unlocked:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: var(--shadow-md);
+  z-index: 1;
+}
+.trophy-card.unlocked {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border-color: var(--border-strong);
+}
+.trophy-icon {
+  font-size: 38px;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.trophy-name {
+  font-size: 13px; font-weight: 800;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.trophy-desc {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.trophy-rarity {
+  display: inline-block;
+  font-size: 8.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.title-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+.title-card {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  transition: all var(--transition);
+}
+.title-card.unlocked {
+  background: linear-gradient(135deg, var(--primary-soft) 0%, var(--surface) 100%);
+  border-color: var(--primary);
+}
+.title-card.locked { opacity: 0.45; }
+.title-name {
+  font-size: 13px; font-weight: 800;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.title-cond {
+  font-size: 11px; color: var(--text-muted);
+}
+

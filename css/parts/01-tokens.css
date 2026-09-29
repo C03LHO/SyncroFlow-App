@@ -1,0 +1,334 @@
+
+
+/* ─── DESIGN TOKENS — paleta base ─── */
+:root {
+  /* Paleta base (cores cruas) */
+  --sf-green:       #00796D;
+  --sf-green-dark:  #00625A;
+  --sf-green-deep:  #004A44;
+  --sf-yellow:      #FFC100;
+  --sf-yellow-dark: #D9A300;
+  --sf-gray:        #6B7280;
+  --sf-orange:      #EA580C;
+  --sf-green-light: #65A30D;
+  --sf-blue:        #0891B2;
+
+  /* Primary */
+  --primary:        #00796D;
+  --primary-2:      #00625A;
+  --primary-deep:   #004A44;
+  --primary-soft:   rgba(0, 121, 109, 0.10);
+  --primary-soft-2: rgba(0, 121, 109, 0.18);
+
+  /* Brand accent */
+  --brand:        #FFC100;
+  --brand-dark:   #D9A300;
+  --brand-deep:   #A67C00;
+  --brand-soft:   rgba(255, 193, 0, 0.16);
+
+  /* Dark ink */
+  --ink:   #0E2A2A;
+  --ink-2: #143838;
+  --ink-3: #1E4747;
+
+  /* Surfaces */
+  --bg:        #EEF3F6;
+  --bg-2:      #DDE5EB;
+  --surface:   #FFFFFF;
+  --surface-2: #F4F7F9;
+  --surface-3: #E8EDF2;
+
+  /* Borders */
+  --border:        #D3DADE;
+  --border-strong: #BCCAD1;
+
+  /* Text */
+  --text:       #17212A;
+  --text-2:     #38424A;
+  --text-muted: #5F6970;
+  --text-soft:  #8F99A1;
+
+  /* Semantic */
+  --accent:       #0891B2;
+  --accent-soft:  rgba(8, 145, 178, 0.13);
+  --success:      #2E8540;
+  --success-soft: rgba(101, 163, 13, 0.16);
+  --warning:      #D9A300;
+  --warning-soft: rgba(255, 193, 0, 0.18);
+  --danger:       #C2333D;
+  --danger-soft:  rgba(194, 51, 61, 0.12);
+  --info:         #0891B2;
+  --info-soft:    rgba(8, 145, 178, 0.13);
+
+  /* Shadows */
+  /* Sombras suaves e difusas (estilo iOS — blur grande, opacidade baixa) */
+  --shadow-xs:   0 1px 2px rgba(14, 42, 42, 0.04);
+  --shadow-sm:   0 2px 8px -2px rgba(14, 42, 42, 0.07);
+  --shadow:      0 6px 18px -6px rgba(14, 42, 42, 0.10);
+  --shadow-md:   0 14px 32px -10px rgba(14, 42, 42, 0.14);
+  --shadow-lg:   0 26px 50px -14px rgba(14, 42, 42, 0.18);
+  --shadow-xl:   0 36px 70px -18px rgba(14, 42, 42, 0.24);
+  --shadow-glow: 0 0 0 4px rgba(0, 121, 109, 0.16);
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius:    8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+
+  /* Layout */
+  --sidebar-w:  256px;
+
+  /* Transitions — curva suave estilo iOS */
+  --transition:      0.24s cubic-bezier(0.32, 0.72, 0, 1);
+  --transition-slow: 0.40s cubic-bezier(0.32, 0.72, 0, 1);
+  --transition-fast: 0.15s cubic-bezier(0.32, 0.72, 0, 1);
+  --motion-pop:      0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ─── Espaçamento (ritmo iOS, base 4px) ─── */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-7: 32px; --space-8: 40px;
+
+  /* ─── Easing iOS ─── */
+  --ease-ios:    cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ─── Glassmorphism ─── Base SÓLIDA (legível em QUALQUER navegador). A
+     translucidez só entra via @supports color-mix logo abaixo; sem suporte,
+     fica sólido (evita o bug de fundo transparente quando color-mix falha). */
+  --glass-bg:     var(--surface);
+  --glass-border: var(--border);
+  --glass-blur:   saturate(180%) blur(20px);
+}
+
+/* Vidro fosco translúcido SÓ onde color-mix é suportado (senão, sólido). */
+@supports (background: color-mix(in srgb, white 50%, transparent)) {
+  :root {
+    --glass-bg:     color-mix(in srgb, var(--surface) 92%, transparent);
+    --glass-border: color-mix(in srgb, var(--border) 72%, transparent);
+  }
+}
+
+/* Theme overrides — light é o default visual */
+[data-theme="light"] {
+  color-scheme: light;
+  --primary:      #0E5C56;
+  --primary-2:    #065652;
+  --primary-deep: #04453E;
+  --primary-soft: rgba(14, 92, 86, 0.12);
+  --brand:        #D9890D;
+  --brand-dark:   #B8700B;
+  --text-muted:   #4E5960;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:        #050F11;
+  --bg-2:      #0A171A;
+  --surface:   #102329;
+  --surface-2: #173238;
+  --surface-3: #204047;
+  --border:    #2C4B53;
+  --border-strong: #3D626B;
+  --text:       #EAF6F7;
+  --text-2:     #BFD4D8;
+  --text-muted: #8EA6AA;
+  --text-soft:  #6B858A;
+  --primary:    #2AB7B0;
+  --primary-2:  #1F9B95;
+  --primary-deep:#147C77;
+  --brand:      #F2BF3D;
+  --success:    #86DB45;
+  --danger:     #E5616A;
+}
+/* SAGE — verde claro, off-white */
+[data-theme="sage"] {
+  color-scheme: light;
+  --bg: #EBF0E8; --bg-2: #D8E2D2;
+  --surface: #F6FAF4; --surface-2: #EDF3EA; --surface-3: #DEEBD8;
+  --border: #C4D4BB; --border-strong: #AABFA0;
+  --ink: #1A2B1C; --ink-2: #263B28; --ink-3: #314B33;
+  --text: #1A2B1C; --text-2: #2E4630; --text-muted: #436650; --text-soft: #557060;
+  --primary: #2E7D4A; --primary-2: #256640; --primary-deep: #1C4F31;
+  --primary-soft: rgba(46,125,74,0.12); --primary-soft-2: rgba(46,125,74,0.22);
+  --brand: #1B7A5E; --brand-dark: #156347; --brand-deep: #0F4C37;
+  --brand-soft: rgba(27,122,94,0.12);
+  --accent: #2196A0; --accent-soft: rgba(33,150,160,0.13);
+  --success: #2E7D4A; --success-soft: rgba(46,125,74,0.13);
+  --warning: #B86A0A; --warning-soft: rgba(184,106,10,0.13);
+  --danger: #A82A33; --danger-soft: rgba(168,42,51,0.13);
+  --info: #2196A0; --info-soft: rgba(33,150,160,0.13);
+}
+
+/* DUSK — lavanda e lilás */
+[data-theme="dusk"] {
+  color-scheme: light;
+  --bg: #EEE8F5; --bg-2: #E0D5EC;
+  --surface: #F8F4FC; --surface-2: #F0EAF8; --surface-3: #E5DCF1;
+  --border: #CEC3DC; --border-strong: #BAA9CE;
+  --ink: #1E1428; --ink-2: #2D2038; --ink-3: #3C2C48;
+  --text: #1E1428; --text-2: #332542; --text-muted: #5A4875; --text-soft: #6A5686;
+  --primary: #6244A0; --primary-2: #503688; --primary-deep: #3E2870;
+  --primary-soft: rgba(98,68,160,0.12); --primary-soft-2: rgba(98,68,160,0.22);
+  --brand: #9B4DAB; --brand-dark: #7E3C8B; --brand-deep: #622D6B;
+  --brand-soft: rgba(155,77,171,0.12);
+  --accent: #4B68CC; --accent-soft: rgba(75,104,204,0.13);
+  --success: #2A7A4A; --success-soft: rgba(42,122,74,0.13);
+  --warning: #B86A0A; --warning-soft: rgba(184,106,10,0.13);
+  --danger: #A82A33; --danger-soft: rgba(168,42,51,0.13);
+  --info: #4B68CC; --info-soft: rgba(75,104,204,0.13);
+}
+
+/* SAND — terroso, caramelo, âmbar */
+[data-theme="sand"] {
+  color-scheme: light;
+  --bg: #EFE8DC; --bg-2: #E3D8C8;
+  --surface: #FAF5EE; --surface-2: #F2EADC; --surface-3: #E8DDCA;
+  --border: #D4C5A8; --border-strong: #C0AE8E;
+  --ink: #2B1A0F; --ink-2: #3A2418; --ink-3: #4A2F22;
+  --text: #2B1A0F; --text-2: #432A1A; --text-muted: #664D30; --text-soft: #7A5A3E;
+  --primary: #8B5E2A; --primary-2: #7A5022; --primary-deep: #5E3D18;
+  --primary-soft: rgba(139,94,42,0.12); --primary-soft-2: rgba(139,94,42,0.22);
+  --brand: #C97B1A; --brand-dark: #A86315; --brand-deep: #854E10;
+  --brand-soft: rgba(201,123,26,0.12);
+  --accent: #C97B1A; --accent-soft: rgba(201,123,26,0.13);
+  --success: #3A7832; --success-soft: rgba(58,120,50,0.13);
+  --warning: #C07A00; --warning-soft: rgba(192,122,0,0.13);
+  --danger: #A82A33; --danger-soft: rgba(168,42,51,0.13);
+  --info: #3A74A0; --info-soft: rgba(58,116,160,0.13);
+}
+
+/* DRACULA — alto contraste roxo */
+[data-theme="dracula"] {
+  color-scheme: dark;
+  --bg: #191a21; --bg-2: #282a36;
+  --surface: #282a36; --surface-2: #2d2f3e; --surface-3: #343746;
+  --border: #44475a; --border-strong: #3a3d4e;
+  --ink: #191a21; --ink-2: #282a36; --ink-3: #343746;
+  --text: #f8f8f2; --text-2: #c3c5d6; --text-muted: #9aa1cc; --text-soft: #7a7fa6;
+  --on-primary: #21222c;   /* texto escuro sobre o roxo claro */
+  --primary: #bd93f9; --primary-2: #a679f0; --primary-deep: #7e5fd5;
+  --primary-soft: rgba(189,147,249,0.18); --primary-soft-2: rgba(189,147,249,0.30);
+  --brand: #f1fa8c; --brand-dark: #d9d96b; --brand-deep: #b7b353;
+  --brand-soft: rgba(241,250,140,0.16);
+  --accent: #bd93f9; --accent-soft: rgba(189,147,249,0.14);
+  --success: #50fa7b; --success-soft: rgba(80,250,123,0.18);
+  --warning: #ffb86c; --warning-soft: rgba(255,184,108,0.18);
+  --danger: #ff5555; --danger-soft: rgba(255,85,85,0.18);
+  --info: #ff79c6; --info-soft: rgba(255,121,198,0.18);
+}
+
+/* CYBERPUNK — neon verde-limão sobre roxo profundo */
+[data-theme="cyberpunk"] {
+  color-scheme: dark;
+  --bg: #08070f; --bg-2: #121223;
+  --surface: #141429; --surface-2: #191a33; --surface-3: #21213f;
+  --border: rgba(150,220,90,0.18); --border-strong: rgba(150,220,90,0.28);
+  --ink: #08070f; --ink-2: #121223; --ink-3: #1a1a32;
+  --text: #dde0ff; --text-2: #c2c5e0; --text-muted: #9498bd; --text-soft: #6f72a4;
+  --on-primary: #0c1500;   /* texto escuro sobre o verde-limão */
+  --primary: #a3d600; --primary-2: #88b900; --primary-deep: #689000;
+  --primary-soft: rgba(163,214,0,0.16); --primary-soft-2: rgba(163,214,0,0.28);
+  --brand: #e6c850; --brand-dark: #b79334; --brand-deep: #8f7429;
+  --brand-soft: rgba(230,200,80,0.16);
+  --accent: #9cc800; --accent-soft: rgba(156,200,0,0.16);
+  --success: #6fe24d; --success-soft: rgba(111,226,77,0.18);
+  --warning: #e09e00; --warning-soft: rgba(224,158,0,0.18);
+  --danger: #ff3162; --danger-soft: rgba(255,49,98,0.18);
+  --info: #d347b5; --info-soft: rgba(211,71,181,0.18);
+}
+
+/* ABYSS — preto absoluto */
+[data-theme="abyss"] {
+  color-scheme: dark;
+  --bg: #080808; --bg-2: #111111;
+  --surface: #151515; --surface-2: #1c1c1c; --surface-3: #232323;
+  --border: #272727; --border-strong: #343434;
+  --ink: #080808; --ink-2: #111111; --ink-3: #1c1c1c;
+  --text: #e6e6e6; --text-2: #c8c8c8; --text-muted: #9a9a9a; --text-soft: #6e6e6e;
+  --on-primary: #111111;   /* texto escuro sobre o primário claro */
+  --primary: #d8d8d8; --primary-2: #f0f0f0; --primary-deep: #a8a8a8;
+  --primary-soft: rgba(216,216,216,0.12); --primary-soft-2: rgba(240,240,240,0.18);
+  --brand: #d1b53d; --brand-dark: #ab942f; --brand-deep: #8b7528;
+  --brand-soft: rgba(209,181,61,0.14);
+  --accent: #d8d8d8; --accent-soft: rgba(240,240,240,0.08);
+  --success: #56b64e; --success-soft: rgba(86,182,78,0.18);
+  --warning: #db8d00; --warning-soft: rgba(219,141,0,0.16);
+  --danger: #c33d45; --danger-soft: rgba(195,61,69,0.16);
+  --info: #ba607f; --info-soft: rgba(186,96,127,0.16);
+}
+
+/* ─── Sidebar adapta nos temas claros (sage/dusk/sand) ─── */
+[data-theme="sage"] .sidebar,
+[data-theme="dusk"] .sidebar,
+[data-theme="sand"] .sidebar {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--bg-2) 100%) !important;
+  border-right-color: var(--border);
+  color: var(--text);
+}
+[data-theme="sage"] .nav-item,
+[data-theme="dusk"] .nav-item,
+[data-theme="sand"] .nav-item { color: var(--text); }
+[data-theme="sage"] .nav-item:hover,
+[data-theme="dusk"] .nav-item:hover,
+[data-theme="sand"] .nav-item:hover { background: var(--primary-soft); color: var(--primary); }
+[data-theme="sage"] .nav-item.active,
+[data-theme="sage"] .nav-item[aria-pressed="true"],
+[data-theme="dusk"] .nav-item.active,
+[data-theme="dusk"] .nav-item[aria-pressed="true"],
+[data-theme="sand"] .nav-item.active,
+[data-theme="sand"] .nav-item[aria-pressed="true"] {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+  color: #fff;
+  box-shadow: 0 4px 10px var(--primary-soft-2);
+}
+[data-theme="sage"] .nav-section-label,
+[data-theme="dusk"] .nav-section-label,
+[data-theme="sand"] .nav-section-label { color: var(--text-muted); }
+[data-theme="sage"] .user-card,
+[data-theme="dusk"] .user-card,
+[data-theme="sand"] .user-card { background: var(--surface-3); }
+[data-theme="sage"] .user-info strong,
+[data-theme="dusk"] .user-info strong,
+[data-theme="sand"] .user-info strong { color: var(--text); }
+[data-theme="sage"] .user-info span,
+[data-theme="dusk"] .user-info span,
+[data-theme="sand"] .user-info span { color: var(--text-muted); }
+[data-theme="sage"] .icon-btn,
+[data-theme="dusk"] .icon-btn,
+[data-theme="sand"] .icon-btn { background: var(--surface-2); color: var(--text-2); }
+[data-theme="sage"] .icon-btn:hover,
+[data-theme="dusk"] .icon-btn:hover,
+[data-theme="sand"] .icon-btn:hover { background: var(--surface-3); color: var(--text); }
+[data-theme="sage"] .nav-badge,
+[data-theme="dusk"] .nav-badge,
+[data-theme="sand"] .nav-badge { background: var(--primary-soft); color: var(--primary); }
+[data-theme="sage"] .brand,
+[data-theme="dusk"] .brand,
+[data-theme="sand"] .brand { border-bottom-color: var(--border); }
+/* Select override for dark themes — calendar filter only */
+[data-theme="dark"] .cal-filter-city select,
+[data-theme="dracula"] .cal-filter-city select,
+[data-theme="cyberpunk"] .cal-filter-city select,
+[data-theme="abyss"] .cal-filter-city select { background-color: var(--surface-2); border-color: var(--border); color: var(--text); }
+
+/* Temas escuros (dracula/cyberpunk/abyss): sidebar mais escura */
+[data-theme="dracula"] .sidebar,
+[data-theme="cyberpunk"] .sidebar,
+[data-theme="abyss"] .sidebar {
+  background: linear-gradient(180deg, var(--ink) 0%, var(--ink-2) 100%) !important;
+  border-right-color: var(--border);
+}
+[data-theme="dracula"] .nav-item.active,
+[data-theme="dracula"] .nav-item[aria-pressed="true"],
+[data-theme="cyberpunk"] .nav-item.active,
+[data-theme="cyberpunk"] .nav-item[aria-pressed="true"],
+[data-theme="abyss"] .nav-item.active,
+[data-theme="abyss"] .nav-item[aria-pressed="true"] {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+  color: var(--ink);
+  font-weight: 800;
+}
+

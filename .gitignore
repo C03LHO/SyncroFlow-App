@@ -1,0 +1,18 @@
+# Configuração e dados de teste local (NÃO vão para o servidor)
+config.local.json
+/data/
+*.db
+*.db-journal
+*.log
+*.log.enc
+
+# Segredos e configuração real (NÃO versionar — use config.example.json como modelo)
+config.json
+*.key
+.syncroflow.key
+
+# Sistema
+desktop.ini
+Thumbs.db
+.DS_Store
+

@@ -1,0 +1,47 @@
+{
+    "database": {
+        "path": "./data/syncroflow.db",
+        "photos_path": "./data/photos.db"
+    },
+    "backups": {
+        "path": "./data/backups",
+        "auto_interval_hours": 24,
+        "keep_count": 30,
+        "encrypt": true
+    },
+    "uploads": {
+        "path": "./data/uploads",
+        "max_size_mb": 50
+    },
+    "session": {
+        "name": "syncroflow_session",
+        "duration_minutes": 480,
+        "secure_cookie": false
+    },
+    "app": {
+        "name": "SyncroFlow",
+        "version": "25.0",
+        "poll_interval_seconds": 5,
+        "history_retention_months": 1,
+        "base_url": "http://localhost:8000"
+    },
+    "debug": {
+        "display_errors": false,
+        "log_errors": true,
+        "log_path": "./data/syncroflow.log"
+    },
+    "email": {
+        "enabled": false,
+        "provider": "smtp",
+        "host": "smtp.example.com",
+        "port": 587,
+        "secure": "tls",
+        "username": "seu-email@example.com",
+        "password": "SUA_SENHA_DE_APP_AQUI",
+        "from": "seu-email@example.com",
+        "from_name": "SyncroFlow",
+        "timeout": 15,
+        "due_check_interval_hours": 6,
+        "due_window_hours": 48
+    }
+}

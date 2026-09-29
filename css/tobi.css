@@ -1,0 +1,2645 @@
+/* ═══════════════════════════════════════════════════════════
+   Tobi — mascote pixel-art do SyncroFlow 🦫
+   O castor de capacete que vive em cima do .sidebar-footer.
+
+   IMPORTANTE: o VISUAL do Tobi continua preservado: sprite, cores,
+   móveis e animações principais seguem o protótipo. Esta versão melhora:
+   profundidade, sombras, feedback visual, detalhes pixel-art, foco,
+   responsividade e microinterações — mantendo a mesma estrutura.
+   
+   As posições horizontais dos móveis e os limites de caminhada são
+   definidos por JS (js/tobi.js → bloco CONFIG).
+   ═══════════════════════════════════════════════════════════ */
+
+
+/* O rodapé da sidebar é a âncora/"chão" do Tobi. */
+.sidebar-footer {
+  position: relative;
+}
+
+/* Mascote desligado (Acessibilidade → Mascote Tobi): esconde a cena toda.
+   Com a cena oculta, o loop de animação pausa sozinho (clientWidth === 0). */
+html.tobi-off .tobi-scene { display: none !important; }
+
+/* Temas EXECUTIVOS: sistema mais sério — o Tobi some por completo (cena flutuante,
+   Guia, Sobre e o coach-mark do tour). As cores continuam iguais às padrão. */
+html.exec-mode .tobi-scene,
+html.exec-mode .guia-tobi,
+html.exec-mode .sobre-hero-tobi,
+html.exec-mode .ont-tobi { display: none !important; }
+
+
+/* Cena: faixa transparente logo ACIMA do rodapé. Pass-through:
+   só o <canvas> do Tobi recebe clique (definido mais abaixo). */
+.tobi-scene {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 72px;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 5;
+
+  --coral: #d97757;
+  --coral-d: #a8432f;
+  --teal: #00796D;
+  --teal-l: #14a8a2;
+  --wood: #8a5a36;
+  --wood-d: #6f4830;
+  --term-line: #3a3833;
+  --cream: #f3e7d8;
+  --shadow: rgba(0, 0, 0, .34);
+
+  isolation: isolate;
+  contain: layout paint;
+}
+
+/* Luz ambiente sutil atrás da cena */
+.tobi-scene::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  width: 140px;
+  height: 54px;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(217, 119, 87, .16) 0%,
+      rgba(0, 121, 109, .08) 42%,
+      transparent 74%
+    );
+  pointer-events: none;
+  z-index: 0;
+  opacity: .9;
+}
+
+/* Vinheta inferior para integrar melhor com a sidebar */
+.tobi-scene::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 30px;
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(0, 0, 0, .14) 62%,
+      rgba(0, 0, 0, .32) 100%
+    );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tobi-floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 16px;
+  z-index: 2;
+  background:
+    linear-gradient(180deg, transparent, rgba(0, 0, 0, .30)),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, .028) 0 1px,
+      transparent 1px 6px
+    );
+  border-top: 1px solid rgba(255, 255, 255, .06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .04),
+    inset 0 -5px 12px rgba(0, 0, 0, .16);
+}
+
+
+/* ─── bancada + notebook ─── */
+.tobi-desk {
+  position: absolute;
+  bottom: 16px;
+  width: 48px;
+  height: 42px;
+  z-index: 4;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .25));
+}
+
+.tobi-desk .tb-top {
+  position: absolute;
+  top: 19px;
+  left: 0;
+  width: 48px;
+  height: 5px;
+  background: linear-gradient(180deg, #95623c, var(--wood));
+  border: 1px solid var(--wood-d);
+  border-radius: 1px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+.tobi-desk .tb-legF {
+  position: absolute;
+  bottom: 0;
+  right: 6px;
+  width: 5px;
+  height: 18px;
+  background: var(--wood-d);
+}
+
+.tobi-desk .tb-legB {
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  width: 4px;
+  height: 18px;
+  background: #5a3a26;
+}
+
+.tobi-desk .tb-kb {
+  position: absolute;
+  bottom: 24px;
+  left: 3px;
+  width: 16px;
+  height: 3px;
+  background: #2a2823;
+  border-radius: 1px;
+  transform: skewX(-22deg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07);
+}
+
+.tobi-desk .tb-lid {
+  position: absolute;
+  bottom: 26px;
+  left: 16px;
+  width: 16px;
+  height: 15px;
+  background: #15140f url("../imagens/logo/icone.png") center/11px no-repeat;
+  border: 1px solid #3a3833;
+  border-radius: 2px;
+  transform: rotate(16deg);
+  transform-origin: bottom left;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .03),
+    0 0 7px rgba(0, 121, 109, .18),
+    0 3px 5px rgba(0, 0, 0, .28);
+}
+
+/* brilho/scanline do notebook */
+.tobi-desk .tb-lid::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .18), transparent 42%),
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, .05) 0 1px,
+      transparent 1px 3px
+    );
+  opacity: .32;
+  pointer-events: none;
+}
+
+.tobi-desk .tb-lid::after {
+  content: "";
+  color: var(--coral);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+@keyframes tobi-flick {
+  0%, 60% { opacity: 1; }
+  61%, 100% { opacity: .4; }
+}
+
+/* tela respirando quando não está em alerta/festa */
+.tobi-scene:not(.has-overdue):not(.cheering) .tobi-desk .tb-lid {
+  animation: tobi-screen-idle 3s steps(2) infinite;
+}
+
+@keyframes tobi-screen-idle {
+  0%, 100% {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, .03),
+      0 0 4px rgba(0, 121, 109, .12),
+      0 3px 5px rgba(0, 0, 0, .28);
+  }
+
+  50% {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, .04),
+      0 0 9px rgba(0, 121, 109, .28),
+      0 3px 5px rgba(0, 0, 0, .28);
+  }
+}
+
+
+/* ─── cadeira (repouso perto da mesa; .out vem pra baixo do Tobi) ─── */
+.tobi-chair {
+  position: absolute;
+  bottom: 16px;
+  width: 12px;
+  height: 12px;
+  z-index: 3;
+  transition: transform .45s ease;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .22));
+}
+
+.tobi-chair .tb-seat {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  width: 12px;
+  height: 4px;
+  background: #4a473f;
+  border-radius: 1px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+.tobi-chair .tb-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 8px;
+  background: #3a3833;
+}
+
+.tobi-chair .tb-leg {
+  position: absolute;
+  bottom: 0;
+  left: 4px;
+  width: 3px;
+  height: 6px;
+  background: #2f2d27;
+}
+
+.tobi-chair.out {
+  transform: translate(var(--chair-out-x, -19px), var(--chair-out-y, 0px));
+}
+
+
+/* ─── máquina de café ─── */
+.tobi-cm {
+  position: absolute;
+  bottom: 16px;
+  width: 22px;
+  height: 32px;
+  z-index: 3;
+  background: linear-gradient(180deg, #4a4640, #2c2a25);
+  border: 1px solid #1c1b17;
+  border-radius: 3px 3px 2px 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .05),
+    0 4px 6px rgba(0, 0, 0, .28);
+}
+
+/* vapor sutil constante */
+.tobi-cm::before,
+.tobi-cm::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  width: 3px;
+  height: 10px;
+  border-radius: 50%;
+  border-left: 1px solid rgba(233, 211, 180, .52);
+  opacity: 0;
+  pointer-events: none;
+  animation: tobi-steam 2.4s ease-in-out infinite;
+}
+
+.tobi-cm::before {
+  left: 8px;
+}
+
+.tobi-cm::after {
+  left: 14px;
+  animation-delay: .8s;
+  opacity: 0;
+}
+
+@keyframes tobi-steam {
+  0% {
+    transform: translateY(5px) scale(.72);
+    opacity: 0;
+  }
+
+  35% {
+    opacity: .56;
+  }
+
+  100% {
+    transform: translateY(-5px) translateX(2px) scale(1.05);
+    opacity: 0;
+  }
+}
+
+.tobi-cm .tb-cm-top {
+  position: absolute;
+  top: -3px;
+  left: 2px;
+  width: 18px;
+  height: 5px;
+  background: #5a564e;
+  border: 1px solid #1c1b17;
+  border-radius: 2px 2px 0 0;
+}
+
+.tobi-cm .tb-cm-screen {
+  position: absolute;
+  top: 4px;
+  left: 3px;
+  width: 11px;
+  height: 5px;
+  background: #0c2030;
+  border: 1px solid #114;
+  border-radius: 1px;
+  box-shadow: 0 0 4px rgba(0, 121, 109, .16);
+}
+
+.tobi-cm .tb-cm-screen::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 5px;
+  height: 2px;
+  background: var(--teal);
+  box-shadow: 6px 0 0 -0.5px var(--coral);
+}
+
+.tobi-cm .tb-cm-btn {
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  width: 3px;
+  height: 3px;
+  background: var(--coral);
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(217, 119, 87, .55);
+  animation: tobi-cm-btn 1.8s ease-in-out infinite;
+}
+
+@keyframes tobi-cm-btn {
+  0%, 100% { opacity: .72; }
+  50% { opacity: 1; }
+}
+
+.tobi-cm .tb-cm-group {
+  position: absolute;
+  top: 13px;
+  left: 5px;
+  width: 12px;
+  height: 5px;
+  background: #39372f;
+  border: 1px solid #1c1b17;
+  border-radius: 0 0 3px 3px;
+}
+
+.tobi-cm .tb-cm-spout {
+  position: absolute;
+  top: 17px;
+  left: 9px;
+  width: 2px;
+  height: 3px;
+  background: #7d786e;
+  box-shadow: 3px 0 #7d786e;
+}
+
+.tobi-cm .tb-cm-tray {
+  position: absolute;
+  bottom: 3px;
+  left: 3px;
+  width: 16px;
+  height: 3px;
+  background: #1c1b17;
+  border-top: 2px solid #7d786e;
+}
+
+
+/* ─── lixeira ─── */
+.tobi-trash {
+  position: absolute;
+  bottom: 16px;
+  width: 14px;
+  height: 18px;
+  z-index: 3;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .22));
+}
+
+.tobi-trash .tb-can {
+  position: absolute;
+  bottom: 0;
+  left: 1px;
+  width: 12px;
+  height: 14px;
+  background: #3a4146;
+  border: 1px solid #20262a;
+  border-radius: 1px 1px 2px 2px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+
+.tobi-trash .tb-can::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  width: 1px;
+  height: 9px;
+  background: #20262a;
+  box-shadow: 3px 0 #20262a, 6px 0 #20262a;
+}
+
+.tobi-trash .tb-tlid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 3px;
+  background: #4a5258;
+  border-radius: 1px;
+  transform-origin: right center;
+  transition: transform .25s;
+}
+
+.tobi-trash.open .tb-tlid {
+  transform: translateY(-2px) rotate(-22deg);
+  animation: tobi-trash-pop .3s cubic-bezier(.2, 1.35, .35, 1);
+}
+
+.tobi-trash.open .tb-can {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .05),
+    0 0 8px rgba(217, 119, 87, .18);
+}
+
+@keyframes tobi-trash-pop {
+  0% { transform: translateY(0) rotate(0); }
+  65% { transform: translateY(-3px) rotate(-30deg); }
+  100% { transform: translateY(-2px) rotate(-22deg); }
+}
+
+
+/* ─── sofá (vista lateral) ─── */
+.tobi-sofa {
+  position: absolute;
+  bottom: 16px;
+  width: 62px;
+  height: 24px;
+  z-index: 3;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .24));
+}
+
+.tobi-sofa .tb-sback {
+  position: absolute;
+  bottom: 8px;
+  left: 6px;
+  width: 50px;
+  height: 14px;
+  background: #2f6b66;
+  border: 1px solid #214f4a;
+  border-radius: 5px 5px 0 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+.tobi-sofa .tb-sback::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 4px;
+  right: 4px;
+  height: 7px;
+  background: #3a8079;
+  border-radius: 3px;
+}
+
+.tobi-sofa .tb-base {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 62px;
+  height: 9px;
+  background: #244f4a;
+  border: 1px solid #173a38;
+  border-radius: 2px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+
+.tobi-sofa .tb-sseat {
+  position: absolute;
+  bottom: 6px;
+  left: 2px;
+  width: 58px;
+  height: 7px;
+  background: #3a8079;
+  border: 1px solid #214f4a;
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+.tobi-sofa .tb-sseat::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 20px;
+  width: 1px;
+  bottom: 1px;
+  background: #214f4a;
+  box-shadow: 18px 0 #214f4a;
+}
+
+.tobi-sofa .tb-armL {
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  width: 8px;
+  height: 14px;
+  background: #2f6b66;
+  border: 1px solid #214f4a;
+  border-radius: 4px 4px 2px 2px;
+}
+
+.tobi-sofa .tb-armR {
+  position: absolute;
+  bottom: 4px;
+  right: 0;
+  width: 8px;
+  height: 14px;
+  background: #2f6b66;
+  border: 1px solid #214f4a;
+  border-radius: 4px 4px 2px 2px;
+}
+
+.tobi-sofa .tb-slegL {
+  position: absolute;
+  bottom: -4px;
+  left: 6px;
+  width: 3px;
+  height: 4px;
+  background: #173a38;
+}
+
+.tobi-sofa .tb-slegR {
+  position: absolute;
+  bottom: -4px;
+  right: 6px;
+  width: 3px;
+  height: 4px;
+  background: #173a38;
+}
+
+
+/* ─── mochila parada no pé da mesa ─── */
+.tobi-backpack {
+  position: absolute;
+  bottom: 16px;
+  width: 11px;
+  height: 14px;
+  z-index: 3;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .22));
+}
+
+.tobi-backpack .tb-bp-body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 11px;
+  height: 12px;
+  background: #d97757;
+  border: 1px solid #a8432f;
+  border-radius: 4px 4px 3px 3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .11);
+}
+
+.tobi-backpack .tb-bp-body::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  width: 2px;
+  height: 7px;
+  background: rgba(255, 255, 255, .14);
+  border-radius: 2px;
+}
+
+.tobi-backpack .tb-bp-pocket {
+  position: absolute;
+  bottom: 1px;
+  left: 2px;
+  width: 7px;
+  height: 5px;
+  background: #c2613f;
+  border: 1px solid #a8432f;
+  border-radius: 2px;
+}
+
+.tobi-backpack .tb-bp-strap {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  width: 2px;
+  height: 9px;
+  background: #a8432f;
+  box-shadow: 3px 0 0 #a8432f;
+}
+
+.tobi-backpack .tb-bp-top {
+  position: absolute;
+  top: -2px;
+  left: 3px;
+  width: 5px;
+  height: 4px;
+  background: #a8432f;
+  border-radius: 3px 3px 0 0;
+}
+
+
+/* ─── copo voador (descartado na lixeira) ─── */
+.tobi-cup {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #e9d3b4;
+  border-top: 2px solid #5a3a26;
+  border-radius: 1px;
+  display: none;
+  z-index: 7;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .22),
+    0 2px 3px rgba(0, 0, 0, .25);
+}
+
+.tobi-cup.fly {
+  animation: tobi-toss .8s ease-in forwards;
+}
+
+@keyframes tobi-toss {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+
+  45% {
+    transform: translate(12px, -20px) rotate(180deg) scale(1.06);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(22px, 12px) rotate(360deg) scale(.72);
+    opacity: 0;
+  }
+}
+
+
+/* ─── o Tobi ─── */
+.tobi {
+  position: absolute;
+  bottom: 4px;
+  left: 120px;
+  cursor: pointer;
+  z-index: 6;
+  width: 54px;
+  height: 60px;
+  pointer-events: none;
+}
+
+/* sombra pixelada do Tobi */
+.tobi::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 36px;
+  height: 7px;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, .34);
+  border-radius: 50%;
+  filter: blur(.2px);
+  opacity: .78;
+  pointer-events: none;
+  z-index: -1;
+  animation: tobi-shadow-idle 2.8s ease-in-out infinite;
+}
+
+@keyframes tobi-shadow-idle {
+  0%, 100% {
+    transform: translateX(-50%) scaleX(1);
+    opacity: .76;
+  }
+
+  50% {
+    transform: translateX(-50%) scaleX(.88);
+    opacity: .58;
+  }
+}
+
+.tobi.face-left {
+  transform: scaleX(-1);
+}
+
+.tobi canvas {
+  image-rendering: pixelated;
+  width: 54px;
+  height: 60px;
+  display: block;
+  transition:
+    transform .4s ease,
+    filter .25s ease;
+  pointer-events: auto;
+  filter:
+    drop-shadow(0 2px 0 rgba(0, 0, 0, .22))
+    drop-shadow(0 5px 6px rgba(0, 0, 0, .24));
+  transform-origin: 50% 100%;
+}
+
+/* hover suave sem mudar o sprite */
+.tobi canvas:hover {
+  transform: translateY(-2px) scale(1.025);
+  filter:
+    drop-shadow(0 0 5px rgba(0, 121, 109, .28))
+    drop-shadow(0 5px 6px rgba(0, 0, 0, .26));
+}
+
+.tobi canvas:active {
+  transform: translateY(1px) scale(.97);
+}
+
+/* foco acessível caso o canvas receba tabindex via JS */
+.tobi canvas:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 3px;
+  border-radius: 5px;
+}
+
+.tobi.seated canvas {
+  transform: translateY(var(--tobi-seat-y, -7px));
+}
+
+.tobi.seated canvas:hover {
+  transform: translateY(calc(var(--tobi-seat-y, -7px) - 1px)) scale(1.015);
+}
+
+.tobi.napping canvas {
+  transform: translateY(var(--tobi-nap-y, -8px));
+}
+
+.tobi.napping canvas:hover {
+  transform: translateY(calc(var(--tobi-nap-y, -8px) - 1px)) scale(1.01);
+}
+
+.tobi.seated::after,
+.tobi.napping::after {
+  width: 39px;
+  opacity: .62;
+}
+
+.tobi-bubble {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  background:
+    linear-gradient(180deg, #343230, #272624);
+  color: #f3e7d8;
+  font-size: 10px;
+  line-height: 1.15;
+  letter-spacing: .1px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid var(--term-line);
+  box-shadow:
+    0 4px 0 rgba(0, 0, 0, .22),
+    0 8px 18px rgba(0, 0, 0, .38),
+    inset 0 1px 0 rgba(255, 255, 255, .06);
+  transition: transform .18s;
+  pointer-events: none;
+  z-index: 8;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .55);
+}
+
+.tobi-bubble::before {
+  content: "> ";
+  color: var(--coral);
+  text-shadow: 0 0 5px rgba(217, 119, 87, .55);
+}
+
+.tobi-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #272624;
+  border-bottom: 0;
+}
+
+.tobi.talk .tobi-bubble {
+  transform: translateX(-50%) scale(1);
+  animation: tobi-bubble-pop .2s cubic-bezier(.2, 1.35, .35, 1);
+}
+
+.tobi.face-left.talk .tobi-bubble {
+  transform: translateX(-50%) scaleX(-1);
+}
+
+@keyframes tobi-bubble-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px) scale(.78);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+
+/* ─── Reações (conexão com o usuário) ─── */
+/* comemorar: pulos altos e animados */
+.tobi.cheer canvas {
+  animation: tobi-cheer .42s ease-in-out 4;
+}
+
+.tobi.cheer::after {
+  animation: tobi-shadow-cheer .42s ease-in-out 4;
+}
+
+@keyframes tobi-cheer {
+  0% {
+    transform: translateY(0) scaleY(1);
+  }
+
+  22% {
+    transform: translateY(-17px) scaleY(1.06);
+  }
+
+  46% {
+    transform: translateY(0) scaleY(.9);
+  }
+
+  64% {
+    transform: translateY(-9px);
+  }
+
+  82% {
+    transform: translateY(0) scaleY(.97);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes tobi-shadow-cheer {
+  0%, 46%, 82%, 100% {
+    transform: translateX(-50%) scaleX(1);
+    opacity: .34;
+  }
+
+  22% {
+    transform: translateX(-50%) scaleX(.58);
+    opacity: .18;
+  }
+
+  64% {
+    transform: translateX(-50%) scaleX(.76);
+    opacity: .24;
+  }
+}
+
+/* assustado: tremedeira nervosa */
+.tobi.scared canvas {
+  animation: tobi-shake .12s linear infinite;
+}
+
+.tobi.scared::after,
+.tobi.shake::after {
+  animation: tobi-shadow-shake .12s linear infinite;
+}
+
+@keyframes tobi-shake {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-1.5px, -1px);
+  }
+
+  50% {
+    transform: translate(1.5px, 0);
+  }
+
+  75% {
+    transform: translate(-1px, 1px);
+  }
+}
+
+@keyframes tobi-shadow-shake {
+  0%, 100% {
+    transform: translateX(-50%) translateX(0) scaleX(1);
+  }
+
+  25% {
+    transform: translateX(-50%) translateX(-1px) scaleX(.96);
+  }
+
+  50% {
+    transform: translateX(-50%) translateX(1px) scaleX(1.04);
+  }
+
+  75% {
+    transform: translateX(-50%) translateX(-.5px) scaleX(.98);
+  }
+}
+
+
+/* confete que estoura do próprio Tobi (autônomo, dentro da cena) */
+.tobi-confetti {
+  position: absolute;
+  width: 0;
+  height: 0;
+  z-index: 9;
+  pointer-events: none;
+}
+
+.tobi-confetti i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  height: 6px;
+  border-radius: 1px;
+  animation: tobi-conf .95s ease-out forwards;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .18);
+  transform-origin: center;
+}
+
+.tobi-confetti i:nth-child(3n) {
+  width: 4px;
+  height: 4px;
+}
+
+.tobi-confetti i:nth-child(4n) {
+  border-radius: 50%;
+}
+
+@keyframes tobi-conf {
+  0% {
+    transform: translate(0, 0) rotate(0);
+    opacity: 1;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+    opacity: 0;
+  }
+}
+
+
+/* FESTA na tela do notebook ao concluir (pisca colorido + 🎉) */
+.tobi-scene.cheering .tobi-desk .tb-lid {
+  animation: tobi-screen-party .26s steps(1) infinite;
+  box-shadow:
+    0 0 8px 1px rgba(217, 119, 87, .42),
+    0 0 12px 2px rgba(0, 121, 109, .32),
+    0 3px 5px rgba(0, 0, 0, .28);
+}
+
+.tobi-scene.cheering .tobi-desk .tb-lid::after {
+  content: "🎉";
+  font-size: 8px;
+  animation: none;
+}
+
+.tobi-scene.cheering .tobi-floor {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .08),
+    inset 0 -5px 10px rgba(0, 0, 0, .18),
+    0 -4px 14px rgba(0, 121, 109, .18),
+    0 -2px 10px rgba(217, 119, 87, .16);
+}
+
+@keyframes tobi-screen-party {
+  0% {
+    background: #0e3a2a;
+  }
+
+  33% {
+    background: #3a2a0e;
+  }
+
+  66% {
+    background: #2a0e3a;
+  }
+
+  100% {
+    background: #0e2a3a;
+  }
+}
+
+
+/* ALERTA: tela do notebook piscando em vermelho quando há card atrasado */
+.tobi-scene.has-overdue::before {
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(255, 80, 80, .16) 0%,
+      rgba(217, 119, 87, .08) 45%,
+      transparent 74%
+    );
+  animation: tobi-alert-ambient 1.1s steps(2) infinite;
+}
+
+@keyframes tobi-alert-ambient {
+  0%, 100% {
+    opacity: .45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.tobi-scene.has-overdue .tobi-desk .tb-lid {
+  animation: tobi-screen-alert .55s steps(1) infinite;
+  border-color: #7f1d1d;
+}
+
+.tobi-scene.has-overdue .tobi-desk .tb-lid::after {
+  content: "!";
+  color: #ff6b6b;
+  font-weight: 700;
+  animation: none;
+}
+
+.tobi-scene.has-overdue .tobi-bubble {
+  border-color: #8f3b37;
+  color: #ffe1dc;
+}
+
+.tobi-scene.has-overdue .tobi-bubble::before {
+  color: #ff6b6b;
+}
+
+@keyframes tobi-screen-alert {
+  0%, 49% {
+    background: #4a0e0e;
+    box-shadow:
+      0 0 7px 1px rgba(255, 50, 50, .6),
+      0 3px 5px rgba(0, 0, 0, .28);
+  }
+
+  50%, 100% {
+    background: #15140f;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, .03),
+      0 3px 5px rgba(0, 0, 0, .28);
+  }
+}
+
+
+/* tremedeira pontual (raiva ao derramar café / susto ao acordar) */
+.tobi.shake canvas {
+  animation: tobi-shake .1s linear infinite;
+}
+
+
+/* 🥱 acordar: levanta espreguiçando (estica pra cima e assenta) */
+.tobi.waking canvas {
+  animation: tobi-wake 1.4s ease-in-out;
+}
+
+@keyframes tobi-wake {
+  0% {
+    transform: translateY(6px) scaleY(.82) scaleX(1.05);
+  }
+
+  25% {
+    transform: translateY(-2px) scaleY(1.12) scaleX(.96);
+  }
+
+  45% {
+    transform: translateY(0) scaleY(.98);
+  }
+
+  60% {
+    transform: translateY(-3px) scaleY(1.06);
+  }
+
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+
+/* (animação de cair da cadeira removida por completo a pedido) */
+
+
+/* ☕ respingo de café no chão (raiva) */
+.tobi-splash {
+  position: absolute;
+  width: 0;
+  height: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.tobi-splash::before,
+.tobi-splash::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: #5a3a26;
+  animation: tobi-splash .5s ease-out forwards;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .25));
+}
+
+.tobi-splash::before {
+  left: -7px;
+  bottom: 0;
+  width: 14px;
+  height: 4px;
+  opacity: .85;
+}
+
+.tobi-splash::after {
+  left: -3px;
+  bottom: 3px;
+  width: 5px;
+  height: 5px;
+  box-shadow:
+    7px 1px 0 -1px #6f4830,
+    -8px 0 0 -1px #6f4830,
+    3px 5px 0 -2px #5a3a26;
+}
+
+@keyframes tobi-splash {
+  0% {
+    transform: scale(.2);
+    opacity: 0;
+  }
+
+  40% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: .9;
+  }
+}
+
+
+/* ─── poeirinha ao caminhar ───
+   Opcional: se o JS adicionar .walking na .tobi, aparece poeira pixelada.
+   Exemplo no JS:
+   tobiEl.classList.toggle('walking', isWalking);
+*/
+.tobi.walking::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  bottom: 7px;
+  width: 3px;
+  height: 3px;
+  background: rgba(243, 231, 216, .42);
+  box-shadow:
+    7px 1px 0 rgba(243, 231, 216, .26),
+    13px 0 0 rgba(243, 231, 216, .18);
+  animation: tobi-dust .45s steps(2) infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.tobi.face-left.walking::before {
+  left: auto;
+  right: 9px;
+}
+
+@keyframes tobi-dust {
+  0% {
+    transform: translateX(0) scale(.7);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: .8;
+  }
+
+  100% {
+    transform: translateX(-8px) scale(1);
+    opacity: 0;
+  }
+}
+
+
+/* ─── responsivo: some no menu mobile (sidebar vira gaveta) ─── */
+@media (max-width: 900px) {
+  .tobi-scene {
+    display: none;
+  }
+}
+
+/* Ajuste fino para sidebars um pouco menores */
+@media (max-width: 1120px) {
+  .tobi-scene {
+    height: 68px;
+  }
+
+  .tobi {
+    width: 50px;
+    height: 56px;
+  }
+
+  .tobi canvas {
+    width: 50px;
+    height: 56px;
+  }
+
+  .tobi-bubble {
+    bottom: 66px;
+    max-width: 124px;
+    font-size: 9px;
+    padding: 4px 7px;
+  }
+}
+
+/* Classe opcional para sidebar muito apertada */
+.tobi-scene.compact .tobi-sofa {
+  opacity: .58;
+  transform: scale(.9);
+  transform-origin: bottom center;
+}
+
+.tobi-scene.compact .tobi-bubble {
+  max-width: 112px;
+}
+
+
+/* ─── modo estático (acessibilidade) ───
+   Aplicado pelo JS (.is-static) APENAS quando o Tobi é congelado
+   (CONFIG.RESPECT_REDUCED_MOTION = true e o SO pede menos movimento).
+   Não usamos @media aqui para que, no modo animado padrão, o passo do
+   Tobi continue deslizando mesmo se o SO estiver com "reduzir movimento". */
+.tobi-scene.is-static,
+.tobi-scene.is-static * {
+  animation: none !important;
+  transition: none !important;
+}
+
+.tobi-scene.is-static::before,
+.tobi-scene.is-static::after,
+.tobi-scene.is-static .tobi::before,
+.tobi-scene.is-static .tobi::after,
+.tobi-scene.is-static .tobi-cm::before,
+.tobi-scene.is-static .tobi-cm::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+
+/* ─── alto contraste / acessibilidade visual ─── */
+@media (forced-colors: active) {
+  .tobi-bubble,
+  .tobi-desk .tb-lid,
+  .tobi-cm,
+  .tobi-trash .tb-can,
+  .tobi-sofa .tb-base {
+    forced-color-adjust: auto;
+    border: 1px solid CanvasText;
+  }
+
+  .tobi canvas:focus-visible {
+    outline: 2px solid Highlight;
+  }
+}
+/* ═══════════════════════════════════════════════════════════
+   Tobi — hotfix + polish final das falas
+   Cole este bloco NO FINAL do CSS atual.
+   Corrige o balão sumindo e melhora leitura/camadas.
+   ═══════════════════════════════════════════════════════════ */
+
+/* IMPORTANTE:
+   Não usar contain: paint na cena, porque isso recorta o balão de fala.
+   O balão fica acima da altura da .tobi-scene. */
+.tobi-scene {
+  overflow: visible !important;
+  contain: layout !important;
+  isolation: isolate;
+}
+
+/* Camadas da cena */
+.tobi-scene::before {
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tobi-scene::after {
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tobi-floor {
+  z-index: 2;
+}
+
+.tobi-chair,
+.tobi-cm,
+.tobi-trash,
+.tobi-sofa,
+.tobi-backpack {
+  z-index: 3;
+}
+
+.tobi-desk {
+  z-index: 4;
+}
+
+.tobi {
+  z-index: 6;
+  overflow: visible;
+}
+
+.tobi canvas {
+  pointer-events: auto;
+}
+
+/* Sombra do Tobi */
+.tobi::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 36px;
+  height: 7px;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, .34);
+  border-radius: 50%;
+  filter: blur(.2px);
+  opacity: .76;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Hover suave */
+.tobi canvas:hover {
+  transform: translateY(-2px) scale(1.025);
+  filter:
+    drop-shadow(0 0 5px rgba(0, 121, 109, .28))
+    drop-shadow(0 5px 6px rgba(0, 0, 0, .26));
+}
+
+.tobi canvas:active {
+  transform: translateY(1px) scale(.97);
+}
+
+.tobi.seated canvas:hover {
+  transform: translateY(calc(var(--tobi-seat-y, -7px) - 1px)) scale(1.015);
+}
+
+.tobi.napping canvas:hover {
+  transform: translateY(calc(var(--tobi-nap-y, -8px) - 1px)) scale(1.01);
+}
+
+.tobi canvas:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 3px;
+  border-radius: 5px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Balão de fala corrigido
+   ═══════════════════════════════════════════════════════════ */
+
+.tobi-bubble {
+  position: absolute;
+  bottom: 64px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px) scale(.86);
+  transform-origin: 50% 100%;
+
+  background:
+    linear-gradient(180deg, #343230, #272624);
+  color: #f3e7d8;
+
+  font-size: 10px;
+  line-height: 1.15;
+  letter-spacing: .1px;
+  padding: 4px 8px;
+  border-radius: 6px;
+
+  white-space: nowrap;
+  max-width: 158px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  border: 1px solid var(--term-line);
+  box-shadow:
+    0 4px 0 rgba(0, 0, 0, .22),
+    0 8px 18px rgba(0, 0, 0, .38),
+    inset 0 1px 0 rgba(255, 255, 255, .06);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 80;
+
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .55);
+
+  transition:
+    opacity .16s ease,
+    visibility .16s ease,
+    transform .18s cubic-bezier(.2, 1.35, .35, 1);
+}
+
+.tobi-bubble::before {
+  content: "> ";
+  color: var(--coral);
+  text-shadow: 0 0 5px rgba(217, 119, 87, .55);
+}
+
+.tobi-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #272624;
+  border-bottom: 0;
+}
+
+.tobi.talk .tobi-bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+/* Quando o Tobi vira para a esquerda, o pai usa scaleX(-1).
+   Este ajuste desinverte o balão para o texto não ficar espelhado. */
+.tobi.face-left.talk .tobi-bubble {
+  transform: translateX(-50%) translateY(0) scaleX(-1) scaleY(1);
+}
+
+/* Alertas */
+.tobi-scene.has-overdue .tobi-bubble {
+  border-color: #8f3b37;
+  color: #ffe1dc;
+}
+
+.tobi-scene.has-overdue .tobi-bubble::before {
+  color: #ff6b6b;
+  text-shadow: 0 0 5px rgba(255, 107, 107, .55);
+}
+
+/* Aura enquanto fala */
+.tobi.talk::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  bottom: 4px;
+  height: 18px;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(217, 119, 87, .18),
+      transparent 68%
+    );
+  pointer-events: none;
+  z-index: -2;
+}
+
+/* Poeirinha ao caminhar */
+.tobi.walking::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  bottom: 7px;
+  width: 3px;
+  height: 3px;
+  background: rgba(243, 231, 216, .42);
+  box-shadow:
+    7px 1px 0 rgba(243, 231, 216, .26),
+    13px 0 0 rgba(243, 231, 216, .18);
+  animation: tobi-dust .45s steps(2) infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.tobi.face-left.walking::before {
+  left: auto;
+  right: 9px;
+}
+
+@keyframes tobi-dust {
+  0% {
+    transform: translateX(0) scale(.7);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: .8;
+  }
+
+  100% {
+    transform: translateX(-8px) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Sombra na comemoração */
+.tobi.cheer::after {
+  animation: tobi-shadow-cheer .42s ease-in-out 4;
+}
+
+@keyframes tobi-shadow-cheer {
+  0%, 46%, 82%, 100% {
+    transform: translateX(-50%) scaleX(1);
+    opacity: .34;
+  }
+
+  22% {
+    transform: translateX(-50%) scaleX(.58);
+    opacity: .18;
+  }
+
+  64% {
+    transform: translateX(-50%) scaleX(.76);
+    opacity: .24;
+  }
+}
+
+/* Sombra na tremedeira */
+.tobi.scared::after,
+.tobi.shake::after {
+  animation: tobi-shadow-shake .12s linear infinite;
+}
+
+@keyframes tobi-shadow-shake {
+  0%, 100% {
+    transform: translateX(-50%) translateX(0) scaleX(1);
+  }
+
+  25% {
+    transform: translateX(-50%) translateX(-1px) scaleX(.96);
+  }
+
+  50% {
+    transform: translateX(-50%) translateX(1px) scaleX(1.04);
+  }
+
+  75% {
+    transform: translateX(-50%) translateX(-.5px) scaleX(.98);
+  }
+}
+
+/* Responsivo fino */
+@media (max-width: 1120px) {
+  .tobi-bubble {
+    bottom: 60px;
+    max-width: 132px;
+    font-size: 9px;
+    padding: 4px 7px;
+  }
+}
+
+/* Modo estático */
+.tobi-scene.is-static .tobi-bubble,
+.tobi-scene.is-static .tobi::before,
+.tobi-scene.is-static .tobi::after,
+.tobi-scene.is-static .tobi.walking::before {
+  animation: none !important;
+  transition: none !important;
+}
+/* ═══════════════════════════════════════════════════════════
+   Tobi — ajuste de chão + rastro de caminhada
+   Cole este bloco NO FINAL do CSS.
+   Corrige:
+   1) sensação de Tobi flutuando;
+   2) poeira aparecendo na frente quando anda para a esquerda/café.
+   ═══════════════════════════════════════════════════════════ */
+
+
+/* ──────────────────────────────────────────────────────────
+   1) Chão mais “encaixado” no sprite
+   ────────────────────────────────────────────────────────── */
+
+.tobi-floor {
+  height: 16px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, .025) 0%,
+      rgba(0, 0, 0, .10) 38%,
+      rgba(0, 0, 0, .30) 100%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, .028) 0 1px,
+      transparent 1px 6px
+    );
+  border-top: 1px solid rgba(255, 255, 255, .055);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .04),
+    inset 0 -6px 10px rgba(0, 0, 0, .18);
+}
+
+/* Pequena linha de contato no topo do chão, onde os pés encostam */
+.tobi-floor::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 1px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(0, 0, 0, .22) 18%,
+      rgba(0, 0, 0, .22) 82%,
+      transparent
+    );
+  pointer-events: none;
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   2) Sombra do Tobi encostada nos pés reais do sprite
+   O canvas tem área transparente embaixo; por isso a sombra precisa
+   ficar mais alta dentro da caixa do .tobi.
+   ────────────────────────────────────────────────────────── */
+
+.tobi::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+
+  /* Antes estava muito baixo. Isso fazia o Tobi parecer flutuar. */
+  bottom: 11px;
+
+  width: 35px;
+  height: 7px;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, .42) 0%,
+      rgba(0, 0, 0, .30) 48%,
+      rgba(0, 0, 0, 0) 76%
+    );
+  border-radius: 50%;
+  filter: blur(.15px);
+  opacity: .85;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Quando sentado/deitado, a sombra fica um pouco mais larga e baixa */
+.tobi.seated::after {
+  bottom: 10px;
+  width: 39px;
+  height: 8px;
+  opacity: .72;
+}
+
+.tobi.napping::after {
+  bottom: 9px;
+  width: 42px;
+  height: 8px;
+  opacity: .68;
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   3) Poeira/rastro SEMPRE atrás do Tobi
+   Importante:
+   - não usamos override em .face-left;
+   - como .face-left usa scaleX(-1), o próprio flip do Tobi já inverte
+     visualmente o rastro;
+   - as partículas agora nascem atrás do passo, não na frente.
+   ────────────────────────────────────────────────────────── */
+
+.tobi.walking::before {
+  content: "";
+  position: absolute;
+
+  /* Posição próxima dos pés reais do sprite */
+  left: 11px;
+  bottom: 15px;
+
+  width: 3px;
+  height: 3px;
+  background: rgba(243, 231, 216, .36);
+
+  /* Partículas para trás.
+     No Tobi normal, ele anda para a direita: trás = esquerda.
+     Quando .face-left aplica scaleX(-1), isso vira automaticamente
+     para o outro lado visual. */
+  box-shadow:
+    -7px 1px 0 rgba(243, 231, 216, .24),
+    -13px 0 0 rgba(243, 231, 216, .16),
+    -18px 2px 0 rgba(243, 231, 216, .10);
+
+  animation: tobi-dust-behind .45s steps(2) infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Cancela o override antigo que jogava a poeira para a frente */
+.tobi.face-left.walking::before {
+  left: 11px;
+  right: auto;
+}
+
+@keyframes tobi-dust-behind {
+  0% {
+    transform: translateX(0) scale(.65);
+    opacity: 0;
+  }
+
+  45% {
+    opacity: .75;
+  }
+
+  100% {
+    transform: translateX(-7px) scale(1);
+    opacity: 0;
+  }
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   4) Ajustes da sombra durante reações usando a nova altura
+   ────────────────────────────────────────────────────────── */
+
+.tobi.cheer::after {
+  animation: tobi-shadow-cheer-grounded .42s ease-in-out 4;
+}
+
+@keyframes tobi-shadow-cheer-grounded {
+  0%, 46%, 82%, 100% {
+    bottom: 11px;
+    transform: translateX(-50%) scaleX(1);
+    opacity: .42;
+  }
+
+  22% {
+    bottom: 11px;
+    transform: translateX(-50%) scaleX(.55);
+    opacity: .20;
+  }
+
+  64% {
+    bottom: 11px;
+    transform: translateX(-50%) scaleX(.74);
+    opacity: .28;
+  }
+}
+
+.tobi.scared::after,
+.tobi.shake::after {
+  animation: tobi-shadow-shake-grounded .12s linear infinite;
+}
+
+@keyframes tobi-shadow-shake-grounded {
+  0%, 100% {
+    bottom: 11px;
+    transform: translateX(-50%) translateX(0) scaleX(1);
+  }
+
+  25% {
+    bottom: 11px;
+    transform: translateX(-50%) translateX(-1px) scaleX(.96);
+  }
+
+  50% {
+    bottom: 11px;
+    transform: translateX(-50%) translateX(1px) scaleX(1.04);
+  }
+
+  75% {
+    bottom: 11px;
+    transform: translateX(-50%) translateX(-.5px) scaleX(.98);
+  }
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   5) Modo estático continua limpo
+   ────────────────────────────────────────────────────────── */
+
+.tobi-scene.is-static .tobi::after,
+.tobi-scene.is-static .tobi.walking::before {
+  animation: none !important;
+  transition: none !important;
+}
+/* ═══════════════════════════════════════════════════════════
+   Tobi — rastro corrigido por JS
+   Cole este bloco NO FINAL do CSS.
+   Corrige definitivamente:
+   - rastro na frente quando o Tobi anda para a esquerda;
+   - poeira dependendo do scaleX(-1).
+   ═══════════════════════════════════════════════════════════ */
+
+
+/* Desliga TODOS os rastros antigos presos no .tobi.
+   Eles sofrem influência do scaleX(-1), por isso dão problema. */
+.tobi.walking::before,
+.tobi.face-left.walking::before {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+
+
+/* Novo rastro independente, dentro da cena.
+   O JS posiciona este elemento atrás do Tobi. */
+.tobi-step-dust {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  bottom: 18px;
+  left: 0;
+
+  background: rgba(243, 231, 216, .38);
+  border-radius: 1px;
+
+  pointer-events: none;
+  z-index: 5;
+
+  opacity: 0;
+  display: none;
+}
+
+
+/* Ativo enquanto o Tobi anda */
+.tobi-step-dust.on {
+  display: block;
+  animation: tobi-step-dust-right .42s steps(2) infinite;
+}
+
+
+/* Quando o Tobi anda para a direita:
+   atrás = esquerda.
+   As partículas vão para a esquerda. */
+.tobi-step-dust.dir-right {
+  box-shadow:
+    -7px 1px 0 rgba(243, 231, 216, .25),
+    -13px 0 0 rgba(243, 231, 216, .16),
+    -18px 2px 0 rgba(243, 231, 216, .10);
+  animation-name: tobi-step-dust-right;
+}
+
+
+/* Quando o Tobi anda para a esquerda:
+   atrás = direita.
+   As partículas vão para a direita. */
+.tobi-step-dust.dir-left {
+  box-shadow:
+    7px 1px 0 rgba(243, 231, 216, .25),
+    13px 0 0 rgba(243, 231, 216, .16),
+    18px 2px 0 rgba(243, 231, 216, .10);
+  animation-name: tobi-step-dust-left;
+}
+
+
+@keyframes tobi-step-dust-right {
+  0% {
+    transform: translateX(0) scale(.65);
+    opacity: 0;
+  }
+
+  45% {
+    opacity: .78;
+  }
+
+  100% {
+    transform: translateX(-7px) scale(1);
+    opacity: 0;
+  }
+}
+
+
+@keyframes tobi-step-dust-left {
+  0% {
+    transform: translateX(0) scale(.65);
+    opacity: 0;
+  }
+
+  45% {
+    opacity: .78;
+  }
+
+  100% {
+    transform: translateX(7px) scale(1);
+    opacity: 0;
+  }
+}
+
+
+/* Modo estático */
+.tobi-scene.is-static .tobi-step-dust {
+  display: none !important;
+  animation: none !important;
+}
+/* ═══════════════════════════════════════════════════════════
+   Tobi — pacote de vida extra + interações sentado + acordar
+   Cole este bloco NO FINAL do CSS.
+   ═══════════════════════════════════════════════════════════ */
+
+/* Segurança: não cortar balões, pensamentos e efeitos acima da cena */
+.tobi-scene {
+  overflow: visible !important;
+  contain: layout !important;
+}
+
+/* Remove definitivamente o rastro antigo preso no .tobi */
+.tobi.walking::before,
+.tobi.face-left.walking::before {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Rastro independente controlado pelo JS
+   ────────────────────────────────────────────────────────── */
+
+.tobi-step-dust {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  bottom: 18px;
+  left: 0;
+  background: rgba(243, 231, 216, .38);
+  border-radius: 1px;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  display: none;
+}
+
+.tobi-step-dust.on {
+  display: block;
+  animation: tobi-step-dust-right .42s steps(2) infinite;
+}
+
+.tobi-step-dust.dir-right {
+  box-shadow:
+    -7px 1px 0 rgba(243, 231, 216, .25),
+    -13px 0 0 rgba(243, 231, 216, .16),
+    -18px 2px 0 rgba(243, 231, 216, .10);
+  animation-name: tobi-step-dust-right;
+}
+
+.tobi-step-dust.dir-left {
+  box-shadow:
+    7px 1px 0 rgba(243, 231, 216, .25),
+    13px 0 0 rgba(243, 231, 216, .16),
+    18px 2px 0 rgba(243, 231, 216, .10);
+  animation-name: tobi-step-dust-left;
+}
+
+@keyframes tobi-step-dust-right {
+  0% {
+    transform: translateX(0) scale(.65);
+    opacity: 0;
+  }
+
+  45% {
+    opacity: .78;
+  }
+
+  100% {
+    transform: translateX(-7px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes tobi-step-dust-left {
+  0% {
+    transform: translateX(0) scale(.65);
+    opacity: 0;
+  }
+
+  45% {
+    opacity: .78;
+  }
+
+  100% {
+    transform: translateX(7px) scale(1);
+    opacity: 0;
+  }
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   Tobi mais “plantado” no chão
+   ────────────────────────────────────────────────────────── */
+
+.tobi::after {
+  bottom: 11px !important;
+  width: 35px;
+  height: 7px;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, .42) 0%,
+      rgba(0, 0, 0, .30) 48%,
+      rgba(0, 0, 0, 0) 76%
+    ) !important;
+  opacity: .85;
+}
+
+.tobi.seated::after {
+  bottom: 10px !important;
+  width: 39px;
+  height: 8px;
+  opacity: .72;
+}
+
+.tobi.napping::after {
+  bottom: 9px !important;
+  width: 42px;
+  height: 8px;
+  opacity: .68;
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   Acordar melhorado
+   Agora o JS usa estado "wake", então ele não desenha digitando.
+   ────────────────────────────────────────────────────────── */
+
+.tobi.waking canvas {
+  animation: tobi-wake-plus 1.45s ease-in-out;
+}
+
+@keyframes tobi-wake-plus {
+  0% {
+    transform: translateY(8px) scaleY(.78) scaleX(1.06) rotate(-2deg);
+    filter:
+      drop-shadow(0 2px 0 rgba(0, 0, 0, .22))
+      drop-shadow(0 5px 6px rgba(0, 0, 0, .24));
+  }
+
+  18% {
+    transform: translateY(-3px) scaleY(1.13) scaleX(.95) rotate(2deg);
+  }
+
+  34% {
+    transform: translateY(1px) scaleY(.95) scaleX(1.03) rotate(-1deg);
+  }
+
+  52% {
+    transform: translateY(-5px) scaleY(1.08) scaleX(.97) rotate(1deg);
+  }
+
+  72% {
+    transform: translateY(0) scaleY(.98) scaleX(1.01);
+  }
+
+  100% {
+    transform: translateY(0) scaleY(1) scaleX(1);
+  }
+}
+
+/* Estrelinhas/alertinhas quando acorda */
+.tobi-wake-stars {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 85;
+}
+
+.tobi-wake-stars i {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #f4c542;
+  box-shadow:
+    0 0 0 1px rgba(90, 58, 38, .35),
+    0 0 6px rgba(244, 197, 66, .45);
+  animation: tobi-wake-star .85s ease-out forwards;
+}
+
+.tobi-wake-stars i:nth-child(2n) {
+  background: #9fe0dd;
+}
+
+.tobi-wake-stars i:nth-child(3n) {
+  background: #d97757;
+}
+
+@keyframes tobi-wake-star {
+  0% {
+    transform: translate(0, 0) scale(.4) rotate(0);
+    opacity: 0;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(var(--sx), var(--sy)) scale(1) rotate(var(--sr));
+    opacity: 0;
+  }
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   Interações sentado/trabalhando
+   ────────────────────────────────────────────────────────── */
+
+/* Mini espreguiçada sentado */
+.tobi.seated.seat-stretch canvas {
+  animation: tobi-seat-stretch .9s ease-in-out;
+}
+
+@keyframes tobi-seat-stretch {
+  0% {
+    transform: translateY(var(--tobi-seat-y, -7px)) scaleY(1);
+  }
+
+  25% {
+    transform: translateY(calc(var(--tobi-seat-y, -7px) - 4px)) scaleY(1.12) scaleX(.96);
+  }
+
+  45% {
+    transform: translateY(calc(var(--tobi-seat-y, -7px) - 2px)) rotate(-3deg);
+  }
+
+  70% {
+    transform: translateY(calc(var(--tobi-seat-y, -7px) - 1px)) rotate(3deg);
+  }
+
+  100% {
+    transform: translateY(var(--tobi-seat-y, -7px)) scaleY(1) rotate(0);
+  }
+}
+
+/* Digitando mais rápido quando cutucado sentado */
+.tobi.seated.type-boost canvas {
+  animation: tobi-type-boost .12s linear infinite;
+}
+
+@keyframes tobi-type-boost {
+  0%, 100% {
+    transform: translateY(var(--tobi-seat-y, -7px)) translateX(0);
+  }
+
+  25% {
+    transform: translateY(var(--tobi-seat-y, -7px)) translateX(-1px);
+  }
+
+  50% {
+    transform: translateY(calc(var(--tobi-seat-y, -7px) - 1px)) translateX(1px);
+  }
+
+  75% {
+    transform: translateY(var(--tobi-seat-y, -7px)) translateX(0);
+  }
+}
+
+/* Concordando / “ok, vou fazer” */
+.tobi.seated.nod canvas {
+  animation: tobi-seat-nod .7s ease-in-out;
+}
+
+@keyframes tobi-seat-nod {
+  0%, 100% {
+    transform: translateY(var(--tobi-seat-y, -7px)) rotate(0);
+  }
+
+  28% {
+    transform: translateY(calc(var(--tobi-seat-y, -7px) + 2px)) rotate(2deg);
+  }
+
+  58% {
+    transform: translateY(calc(var(--tobi-seat-y, -7px) - 1px)) rotate(-1deg);
+  }
+}
+
+/* Pequeno susto sentado */
+.tobi.seated.seat-pop canvas {
+  animation: tobi-seat-pop .55s cubic-bezier(.2, 1.35, .35, 1);
+}
+
+@keyframes tobi-seat-pop {
+  0% {
+    transform: translateY(var(--tobi-seat-y, -7px)) scale(1);
+  }
+
+  40% {
+    transform: translateY(calc(var(--tobi-seat-y, -7px) - 8px)) scale(1.06);
+  }
+
+  100% {
+    transform: translateY(var(--tobi-seat-y, -7px)) scale(1);
+  }
+}
+
+/* Teclado brilha quando ele “foca” */
+.tobi-scene.typing-boost .tobi-desk .tb-kb {
+  animation: tobi-keyboard-boost .16s steps(2) infinite;
+}
+
+@keyframes tobi-keyboard-boost {
+  0%, 100% {
+    background: #2a2823;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, .07),
+      0 0 0 rgba(0, 121, 109, 0);
+  }
+
+  50% {
+    background: #123532;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, .10),
+      0 0 5px rgba(0, 121, 109, .45);
+  }
+}
+
+/* Tela do notebook em modo foco */
+.tobi-scene.typing-boost .tobi-desk .tb-lid {
+  box-shadow:
+    0 0 8px rgba(0, 121, 109, .42),
+    0 0 12px rgba(217, 119, 87, .18),
+    0 3px 5px rgba(0, 0, 0, .28);
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   Pensamento visual independente
+   O JS posiciona perto da cabeça do Tobi.
+   ────────────────────────────────────────────────────────── */
+
+.tobi-thought {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  min-width: 18px;
+  height: 16px;
+  padding: 2px 5px;
+  border-radius: 8px;
+  background: #f3e7d8;
+  color: #2f2e2c;
+  font-size: 10px;
+  line-height: 12px;
+  text-align: center;
+  border: 1px solid rgba(58, 56, 51, .85);
+  box-shadow:
+    0 3px 0 rgba(0, 0, 0, .22),
+    0 6px 12px rgba(0, 0, 0, .30);
+  pointer-events: none;
+  z-index: 86;
+  opacity: 0;
+  transform: translateY(4px) scale(.8);
+}
+
+.tobi-thought::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  bottom: -4px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #f3e7d8;
+  border: 1px solid rgba(58, 56, 51, .75);
+}
+
+.tobi-thought.on {
+  animation: tobi-thought-pop 1.45s ease-in-out forwards;
+}
+
+@keyframes tobi-thought-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(5px) scale(.75);
+  }
+
+  16% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  76% {
+    opacity: 1;
+    transform: translateY(-1px) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-5px) scale(.88);
+  }
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   Modo estático
+   ────────────────────────────────────────────────────────── */
+
+.tobi-scene.is-static .tobi-step-dust,
+.tobi-scene.is-static .tobi-thought,
+.tobi-scene.is-static .tobi-wake-stars,
+.tobi-scene.is-static .tobi-wake-stars i {
+  display: none !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════/* ═══════════════════════════════════════════════════════════ */
+
+/* Glow mais macio no Tobi */
+.tobi canvas {
+  filter:
+    drop-shadow(0 2px 0 rgba(0, 0, 0, .22))
+    drop-shadow(0 5px 6px rgba(0, 0, 0, .24))
+    drop-shadow(0 0 4px rgba(217, 119, 87, .10));
+}
+
+/* Hover mais “fofinho” */
+.tobi canvas:hover {
+  transform: translateY(-2px) scale(1.035);
+  filter:
+    drop-shadow(0 0 5px rgba(217, 119, 87, .32))
+    drop-shadow(0 0 7px rgba(0, 121, 109, .18))
+    drop-shadow(0 5px 6px rgba(0, 0, 0, .26));
+}
+
+/* Quando sentado e clicado: reação de carinho */
+.tobi.cute-pop canvas {
+  animation: tobi-cute-pop .62s cubic-bezier(.2, 1.45, .35, 1);
+}
+
+@keyframes tobi-cute-pop {
+  0% {
+    transform: translateY(var(--tobi-seat-y, -7px)) scale(1);
+  }
+
+  35% {
+    transform: translateY(calc(var(--tobi-seat-y, -7px) - 6px)) scale(1.08) rotate(-2deg);
+  }
+
+  65% {
+    transform: translateY(calc(var(--tobi-seat-y, -7px) - 2px)) scale(.98) rotate(2deg);
+  }
+
+  100% {
+    transform: translateY(var(--tobi-seat-y, -7px)) scale(1) rotate(0);
+  }
+}
+
+/* Reação tímida/fofa */
+.tobi.shy canvas {
+  animation: tobi-shy .9s ease-in-out;
+}
+
+@keyframes tobi-shy {
+  0%, 100% {
+    transform: translateY(var(--tobi-seat-y, -7px)) rotate(0);
+  }
+
+  25% {
+    transform: translateY(calc(var(--tobi-seat-y, -7px) + 1px)) rotate(-3deg);
+  }
+
+  50% {
+    transform: translateY(calc(var(--tobi-seat-y, -7px) - 1px)) rotate(3deg);
+  }
+
+  75% {
+    transform: translateY(var(--tobi-seat-y, -7px)) rotate(-1deg);
+  }
+}
+
+/* Corações fofos que saem do Tobi */
+.tobi-hearts {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 90;
+}
+
+.tobi-hearts i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 5px;
+  height: 5px;
+  background: #ff8fb0;
+  transform: rotate(45deg);
+  animation: tobi-heart-float .95s ease-out forwards;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .18);
+}
+
+.tobi-hearts i::before,
+.tobi-hearts i::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: inherit;
+  border-radius: 50%;
+}
+
+.tobi-hearts i::before {
+  left: -3px;
+  top: 0;
+}
+
+.tobi-hearts i::after {
+  left: 0;
+  top: -3px;
+}
+
+.tobi-hearts i:nth-child(2n) {
+  background: #d97757;
+}
+
+.tobi-hearts i:nth-child(3n) {
+  background: #f4c542;
+}
+
+@keyframes tobi-heart-float {
+  0% {
+    transform: translate(0, 0) rotate(45deg) scale(.45);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(var(--hx), var(--hy)) rotate(45deg) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Balão fica um pouco mais macio */
+.tobi-bubble {
+  border-radius: 8px;
+  box-shadow:
+    0 4px 0 rgba(0, 0, 0, .22),
+    0 8px 18px rgba(0, 0, 0, .34),
+    0 0 8px rgba(217, 119, 87, .10),
+    inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+/* Pensamento mais fofo */
+.tobi-thought {
+  background: #fff1df;
+  color: #2f2e2c;
+  border-color: rgba(217, 119, 87, .75);
+}
+
+/* Notebook reage quando o Tobi manda coração */
+.tobi-scene.cute-mode .tobi-desk .tb-lid {
+  box-shadow:
+    0 0 8px rgba(255, 143, 176, .38),
+    0 0 10px rgba(217, 119, 87, .24),
+    0 3px 5px rgba(0, 0, 0, .28);
+}
+
+.tobi-scene.cute-mode .tobi-desk .tb-lid::after {
+  content: "♥";
+  color: #ff8fb0;
+  font-size: 9px;
+}
+
+/* Modo estático */
+.tobi-scene.is-static .tobi-hearts,
+.tobi-scene.is-static .tobi-hearts i {
+  display: none !important;
+  animation: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   🎉 Temas sazonais — decoração do ambiente do Tobi
+   (bandeirola configurável + enfeites flutuantes em emoji)
+   ═══════════════════════════════════════════════════════════ */
+.tobi-garland {                      /* bandeirola no topo da cena */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  pointer-events: none;
+  z-index: 6;
+}
+.tobi-garland::before {              /* fiozinho que segura as bandeirinhas */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 2%;
+  right: 2%;
+  height: 2px;
+  background: linear-gradient(90deg, #1ca64c, #ffdf00, #2740a6, #1ca64c);
+  border-radius: 2px;
+}
+.tobi-garland .tf {                  /* bandeirinha triangular (cor via inline style) */
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 8px solid #ffdf00;
+  transform-origin: top center;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .25));
+  animation: tobi-wc-sway 2.8s ease-in-out infinite;
+}
+.tobi-garland.bulbs .tf {            /* variante: lâmpadas redondas (cor via background) */
+  width: 7px;
+  height: 7px;
+  border: 0;
+  border-radius: 50%;
+  margin-top: 1px;
+  box-shadow: 0 0 4px currentColor;
+}
+.tobi-garland .tf:nth-child(2n) { animation-delay: .4s; }
+.tobi-garland .tf:nth-child(3n) { animation-delay: .8s; }
+
+@keyframes tobi-wc-sway {
+  0%, 100% { transform: rotate(-7deg); }
+  50%      { transform: rotate(7deg); }
+}
+
+.tobi-floaters {                     /* enfeites flutuantes (emoji) */
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 4;
+}
+.tobi-floaters i {
+  position: absolute;
+  font-style: normal;
+  line-height: 1;
+  opacity: .92;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .25));
+  animation: tobi-float 3.2s ease-in-out infinite;
+}
+@keyframes tobi-float {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50%      { transform: translateY(-5px) rotate(5deg); }
+}
+
+/* Respeita "reduzir movimento" e o modo estático do Tobi */
+@media (prefers-reduced-motion: reduce) {
+  .tobi-garland .tf,
+  .tobi-floaters i { animation: none; }
+}
+.tobi-scene.is-static .tobi-garland .tf,
+.tobi-scene.is-static .tobi-floaters i { animation: none !important; }
+
+/* #8 — eventos mais animados: lâmpadas piscam, floaters mais vivos */
+.tobi-garland.bulbs .tf {
+  animation: tobi-wc-sway 2.8s ease-in-out infinite, tobi-bulb-twinkle 1.6s ease-in-out infinite;
+}
+.tobi-garland.bulbs .tf:nth-child(2n) { animation-delay: .4s, .5s; }
+.tobi-garland.bulbs .tf:nth-child(3n) { animation-delay: .8s, .9s; }
+@keyframes tobi-bulb-twinkle {
+  0%, 100% { filter: brightness(1);   box-shadow: 0 0 4px currentColor; }
+  50%      { filter: brightness(1.7); box-shadow: 0 0 9px currentColor; }
+}
+.tobi-floaters i { animation-duration: 2.6s; }   /* sobe/desce um pouco mais animado */
+
+/* #10 — Terremoto: tremor forte de toda a cena do Tobi */
+.tobi-scene.tobi-quaking { animation: tobi-quake .085s linear 15 !important; transform-origin: center bottom; }
+@keyframes tobi-quake {
+  0%,100% { transform: translate(0,0) rotate(0); }
+  20%     { transform: translate(-3px,1px) rotate(-1.5deg); }
+  40%     { transform: translate(3px,-1px) rotate(1.5deg); }
+  60%     { transform: translate(-2px,-2px) rotate(-1deg); }
+  80%     { transform: translate(2px,2px) rotate(1deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tobi-scene.tobi-quaking { animation: none !important; }
+}
+

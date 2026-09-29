@@ -1,0 +1,406 @@
+/* ═══════════════════════════════════════════════════════════
+   SyncroFlow — css/parts/10-a11y.css
+   Sistema de ACESSIBILIDADE (módulo visual + utilitários).
+
+   Tudo é dirigido por classes/atributos em <html> (definidos por
+   js/a11y/preferences.js e aplicados ANTES do paint em _head.php):
+     html.a11y-contrast        → alto contraste
+     html.a11y-readable-font   → fonte mais legível
+     html.a11y-links           → destacar links
+     html.a11y-focus           → destaque de foco reforçado
+     html.a11y-spacing         → espaçamento de texto (WCAG 1.4.12)
+     html.a11y-reading         → modo leitura (remove distrações)
+     html.a11y-reduce-motion   → reduzir animações (toggle do usuário)
+     html { --a11y-zoom: 1 }   → tamanho do conteúdo (fonte)
+
+   Usa os tokens de tema (01-tokens.css), então funciona em light,
+   dark e em todos os temas. Não remove outline sem substituir.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────
+   1) Utilitários base
+   ───────────────────────────────────────────────────────────── */
+
+/* Conteúdo só para leitor de tela (visualmente escondido, mas anunciável). */
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+/* Versão que volta a ser visível ao receber foco (ex.: skip link). */
+.sr-only-focusable:focus,
+.sr-only-focusable:focus-within {
+  position: fixed !important;
+  width: auto; height: auto;
+  margin: 0; overflow: visible; clip: auto; white-space: normal;
+}
+
+/* Skip link — primeiro elemento focável da página. */
+.skip-link {
+  position: fixed;
+  top: 8px; left: 8px;
+  z-index: 100000;
+  transform: translateY(-150%);
+  padding: 10px 16px;
+  background: var(--primary, #00796D);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 6px 24px rgba(0,0,0,.28);
+  transition: transform .16s ease;
+}
+.skip-link:focus { transform: translateY(0); outline: 3px solid #fff; outline-offset: 2px; }
+
+/* ─────────────────────────────────────────────────────────────
+   2) Foco visível (reforça o que já existe em 09-extras.css)
+   ───────────────────────────────────────────────────────────── */
+
+/* Garante que NENHUM reset remova o foco sem equivalência. */
+:focus-visible { outline-offset: 2px; }
+
+/* Destaque de foco reforçado (opcional, via painel).
+   Usa :focus (não :focus-visible) para aparecer TAMBÉM ao clicar com o mouse,
+   não só na navegação por teclado. */
+html.a11y-focus :where(a, button, input, select, textarea, [tabindex], .nav-item, [role="button"], [role="tab"], [role="menuitem"], [role="switch"]):focus {
+  outline: 3px solid var(--primary, #00796D) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px var(--surface, #fff), 0 0 0 6px var(--primary, #00796D) !important;
+  border-radius: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   3) Tamanho do conteúdo (fonte) — zoom do conteúdo, NÃO do painel
+   ───────────────────────────────────────────────────────────── */
+:root { --a11y-zoom: 1; }
+/* O painel e o botão flutuante ficam FORA destes contêineres,
+   então continuam sempre operáveis em 100%. */
+.app-shell,
+#modal-mount,
+#notifications-panel,
+#toasts,
+.lwrap { zoom: var(--a11y-zoom); }   /* .lwrap = páginas de login/cadastro */
+
+/* Elemento sendo lido em voz alta (modo "ler ao passar o mouse"). */
+.a11y-reading-target {
+  outline: 3px solid var(--primary, #00796D) !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+html.a11y-read-hover { cursor: help; }
+
+/* ─────────────────────────────────────────────────────────────
+   4) Fonte mais legível
+   ───────────────────────────────────────────────────────────── */
+html.a11y-readable-font,
+html.a11y-readable-font body,
+html.a11y-readable-font :where(button, input, select, textarea, .nav-item, .card, h1, h2, h3, h4, h5, h6, p, span, a, label, td, th) {
+  font-family: "Atkinson Hyperlegible", "Verdana", "Tahoma", "Segoe UI", system-ui, sans-serif !important;
+  letter-spacing: .01em;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   5) Destacar links
+   ───────────────────────────────────────────────────────────── */
+html.a11y-links a:not(.btn):not(.nav-item):not(.skip-link) {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 2px;
+  font-weight: 600;
+}
+html.a11y-links a:not(.btn):not(.nav-item):not(.skip-link):hover,
+html.a11y-links a:not(.btn):not(.nav-item):not(.skip-link):focus-visible {
+  background: var(--primary-soft, rgba(0,121,109,.16));
+  outline: 1px solid var(--primary, #00796D);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   6) Espaçamento de texto (próximo do WCAG 1.4.12, sem quebrar layout)
+   ───────────────────────────────────────────────────────────── */
+html.a11y-spacing :where(p, li, a, span, label, td, th, h1, h2, h3, h4, h5, h6, .card, .card *, .modal-body, .modal-body *) {
+  line-height: 1.6 !important;
+  letter-spacing: .04em !important;
+  word-spacing: .08em !important;
+}
+html.a11y-spacing :where(p, li) { margin-block: .75em !important; }
+/* Deixa contêineres de texto crescerem em vez de cortar. */
+html.a11y-spacing :where(.card, .modal-body) { overflow: auto; }
+
+/* ─────────────────────────────────────────────────────────────
+   7) Alto contraste — força paletas fortes mantendo os tokens
+   ───────────────────────────────────────────────────────────── */
+/* Temas claros → texto escuro sobre branco. */
+html.a11y-contrast[data-theme="light"],
+html.a11y-contrast[data-theme="sage"],
+html.a11y-contrast[data-theme="sand"],
+html.a11y-contrast[data-theme="dusk"] {
+  --text: #000; --text-2: #000; --text-muted: #1c1c1c; --text-soft: #1c1c1c;
+  --surface: #fff; --surface-2: #fff; --surface-3: #f0f0f0;
+  --bg: #fff; --border: #000;
+  --primary: #005a57; --primary-soft: #d6f0ef;
+}
+/* Temas escuros (e o :root padrão) → texto claro sobre preto. */
+html.a11y-contrast[data-theme="dark"],
+html.a11y-contrast[data-theme="dracula"],
+html.a11y-contrast[data-theme="cyberpunk"],
+html.a11y-contrast[data-theme="abyss"],
+html.a11y-contrast:not([data-theme]) {
+  --text: #fff; --text-2: #fff; --text-muted: #eaeaea; --text-soft: #eaeaea;
+  --surface: #000; --surface-2: #0a0a0a; --surface-3: #161616;
+  --bg: #000; --border: #fff;
+  --primary: #45e0d8; --primary-soft: rgba(69,224,216,.22);
+}
+html.a11y-contrast :where(.card, .modal, .nav-item, .input, input, select, textarea, .btn) {
+  border: 1px solid var(--border) !important;
+}
+html.a11y-contrast a { text-decoration: underline !important; }
+html.a11y-contrast :where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--primary) !important; outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   8) Modo leitura — remove distrações, prioriza conteúdo
+   ───────────────────────────────────────────────────────────── */
+html.a11y-reading .tobi-scene,           /* mascote */
+html.a11y-reading .ach-toast-glow,
+html.a11y-reading [data-decorative],
+html.a11y-reading .kpi-spark,
+html.a11y-reading .dev-signature { display: none !important; }
+
+html.a11y-reading body { background: var(--surface) !important; }
+html.a11y-reading .content {
+  max-width: 1100px;
+  margin-inline: auto;
+}
+html.a11y-reading :where(p, li, .card-desc) { line-height: 1.7 !important; }
+/* remove sombras/efeitos para reduzir ruído visual */
+html.a11y-reading :where(.card, .modal, .kpi) { box-shadow: none !important; }
+
+/* ─────────────────────────────────────────────────────────────
+   9) Reduzir animações (toggle do usuário — espelha o catch-all do SO)
+   ───────────────────────────────────────────────────────────── */
+html.a11y-reduce-motion *,
+html.a11y-reduce-motion *::before,
+html.a11y-reduce-motion *::after {
+  animation-duration: .001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .001ms !important;
+  scroll-behavior: auto !important;
+}
+/* Tobi: o movimento principal é via canvas/JS (congelado em tobi.js
+   setReducedMotion). Aqui zeramos os efeitos CSS do cenário — a
+   especificidade (html + 2 classes) supera as regras de tobi.css. */
+html.a11y-reduce-motion .tobi-scene,
+html.a11y-reduce-motion .tobi-scene *,
+html.a11y-reduce-motion .tobi-floaters i {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   10) Área mínima de toque (mobile) — alvos >= 44x44 (WCAG 2.5.5)
+   ───────────────────────────────────────────────────────────── */
+@media (pointer: coarse) {
+  .icon-btn, .nav-item, .btn, [role="button"], .a11y-row button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   11) Botão flutuante (FAB) + Painel de acessibilidade
+   ───────────────────────────────────────────────────────────── */
+/* RETRÁTIL: encostado na borda direita (meio-vertical), recolhido por
+   padrão. Desliza para fora ao passar o mouse, ao focar (teclado) ou em
+   toque. Não conflita com o "+ Novo card" (canto inferior). */
+#a11y-fab {
+  position: fixed;
+  top: 50%; right: 0;
+  z-index: 99990;
+  width: 62px; height: 66px;       /* aba justa: do tamanho do ícone, sem sobra */
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;                /* o ícone fica DENTRO da aba */
+  border: none;
+  border-radius: 33px 0 0 33px;
+  background: var(--primary, #00796D);
+  color: #fff; line-height: 1;
+  cursor: pointer;
+  box-shadow: -4px 6px 22px rgba(0,0,0,.28);
+  transform: translateY(-50%) translateX(20px);   /* recolhido: mostra a maior parte do ícone */
+  transition: transform .24s cubic-bezier(.22,.61,.36,1), box-shadow .16s ease, background .16s ease;
+}
+/* alça (grip) visível na borda, sinaliza que é arrastável/clicável */
+#a11y-fab::after { display: none; }   /* grip removido — o ícone grande já sinaliza */
+#a11y-fab:hover,
+#a11y-fab:focus-visible,
+#a11y-fab.is-peek { transform: translateY(-50%) translateX(0); }
+#a11y-fab:hover { box-shadow: -8px 10px 30px rgba(0,0,0,.38); }
+#a11y-fab:focus-visible { outline: 3px solid #fff; outline-offset: -4px; }
+/* Em telas de toque (sem hover) fica sempre acessível e tappável (>=44px). */
+@media (pointer: coarse) {
+  #a11y-fab { transform: translateY(-50%) translateX(0); width: 62px; }
+}
+
+/* Perfis rápidos (presets) */
+.a11y-presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.a11y-preset {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 12px 6px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface-2);
+  color: var(--text); cursor: pointer; font-size: 12px; font-weight: 600; line-height: 1.2; text-align: center;
+}
+.a11y-preset .pico { font-size: 20px; }
+.a11y-preset:hover { border-color: var(--primary, #00796D); background: var(--primary-soft, rgba(0,121,109,.14)); }
+.a11y-preset:focus-visible { outline: 3px solid var(--primary, #00796D); outline-offset: 2px; }
+
+.a11y-kbd-hint { margin: 12px 2px 0; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.a11y-kbd-hint kbd {
+  display: inline-block; padding: 1px 6px; border-radius: 5px;
+  border: 1px solid var(--border); background: var(--surface-2);
+  font-family: inherit; font-size: 11px; font-weight: 700;
+}
+
+.a11y-backdrop {
+  position: fixed; inset: 0;
+  z-index: 99991;
+  background: rgba(0,0,0,.45);
+  display: flex; justify-content: flex-end;
+}
+.a11y-panel {
+  width: min(380px, 100vw);
+  max-height: 100vh;
+  overflow-y: auto;
+  background: var(--surface, #fff);
+  color: var(--text, #111);
+  border-left: 1px solid var(--border, #ddd);
+  box-shadow: -8px 0 40px rgba(0,0,0,.25);
+  padding: 18px 18px 28px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.a11y-panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: -18px;
+  z-index: 10;                 /* fica ACIMA dos toggles (que têm position:relative) ao rolar */
+  background: var(--surface, #fff);
+  padding: 4px 0 8px; margin: -4px 0 0;
+  border-bottom: 1px solid var(--border, #eee);
+}
+.a11y-panel-head h2 { font-size: 18px; margin: 0; display: flex; align-items: center; gap: 8px; }
+.a11y-title-icon {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+.a11y-panel-close {
+  border: none; background: transparent; color: var(--text-muted, #555);
+  font-size: 22px; cursor: pointer; line-height: 1;
+  width: 40px; height: 40px; border-radius: 8px;
+}
+.a11y-panel-close:hover { background: var(--surface-2, #eee); }
+
+.a11y-section-label {
+  font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-muted, #777); margin: 6px 0 2px;
+}
+
+/* Cada controle do painel */
+.a11y-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border, #e3e3e3);
+  border-radius: 10px;
+  background: var(--surface-2, #f7f7f7);
+}
+.a11y-row-label { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; }
+.a11y-row-label .a11y-ico { font-size: 18px; width: 22px; text-align: center; }
+.a11y-row-desc { font-size: 12px; color: var(--text-muted, #777); font-weight: 400; margin-top: 2px; }
+
+/* Botão de incremento (fonte) */
+.a11y-stepper { display: inline-flex; align-items: center; gap: 6px; }
+.a11y-stepper button {
+  width: 38px; height: 38px; border-radius: 8px;
+  border: 1px solid var(--border, #ccc); background: var(--surface, #fff);
+  color: var(--text, #111); font-size: 18px; font-weight: 800; cursor: pointer;
+}
+.a11y-stepper button:hover:not(:disabled) { background: var(--primary-soft, #e0f3f2); }
+.a11y-stepper button:disabled { opacity: .4; cursor: not-allowed; }
+.a11y-stepper output { min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; font-weight: 700; }
+
+/* Switch (toggle) acessível — é um <button role implícito> com aria-pressed */
+.a11y-switch {
+  position: relative;
+  width: 50px; height: 28px; flex: 0 0 auto;
+  border-radius: 999px;
+  border: 1px solid var(--border, #bbb);
+  background: var(--surface-3, #ddd);
+  cursor: pointer; padding: 0;
+  transition: background .16s ease;
+}
+.a11y-switch::after {
+  content: ""; position: absolute; top: 2px; left: 2px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.4);
+  transition: transform .16s ease;
+}
+.a11y-switch[aria-pressed="true"] { background: var(--primary, #00796D); }
+.a11y-switch[aria-pressed="true"]::after { transform: translateX(22px); }
+.a11y-switch:focus-visible { outline: 3px solid var(--primary, #00796D); outline-offset: 2px; }
+
+.a11y-actions { display: flex; gap: 10px; margin-top: 6px; }
+.a11y-actions .btn { flex: 1; }
+
+.a11y-reset {
+  border: 1px solid var(--danger, #c2333d); color: var(--danger, #c2333d);
+  background: transparent; border-radius: 10px; padding: 10px; font-weight: 700; cursor: pointer;
+}
+.a11y-reset:hover { background: var(--danger, #c2333d); color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  #a11y-fab, .skip-link, .a11y-switch, .a11y-switch::after { transition: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   12) Player de áudio acessível (custom, sobre <audio> nativo)
+   ───────────────────────────────────────────────────────────── */
+.aplayer {
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--border, #ddd);
+  border-radius: 12px;
+  background: var(--surface-2, #f7f7f7);
+  max-width: 560px;
+}
+.aplayer-title { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.aplayer-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.aplayer-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--border, #ccc);
+  background: var(--primary, #00796D); color: #fff;
+  font-size: 18px; cursor: pointer; display: grid; place-items: center;
+}
+.aplayer-btn:focus-visible { outline: 3px solid var(--primary, #00796D); outline-offset: 3px; }
+.aplayer-time { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--text-muted, #555); min-width: 92px; }
+.aplayer-seek, .aplayer-volume { accent-color: var(--primary, #00796D); height: 28px; cursor: pointer; }
+.aplayer-seek { flex: 1; min-width: 140px; }
+.aplayer-volume-wrap { display: flex; align-items: center; gap: 6px; }
+.aplayer-volume { width: 96px; }
+.aplayer-seek:focus-visible, .aplayer-volume:focus-visible { outline: 3px solid var(--primary, #00796D); outline-offset: 3px; }
+
+.aplayer-transcript-toggle {
+  align-self: flex-start;
+  border: 1px solid var(--border, #ccc); background: var(--surface, #fff);
+  color: var(--text, #111); border-radius: 8px; padding: 8px 12px; cursor: pointer; font-weight: 600;
+}
+.aplayer-transcript-toggle:focus-visible { outline: 3px solid var(--primary, #00796D); outline-offset: 2px; }
+.aplayer-transcript {
+  border: 1px dashed var(--border, #ccc); border-radius: 10px;
+  padding: 12px 14px; background: var(--surface, #fff);
+  font-size: 14px; line-height: 1.6; max-height: 320px; overflow: auto;
+}
+.aplayer-transcript[hidden] { display: none; }
+.aplayer-transcript h4 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted, #666); }
+.aplayer-transcript .cue { margin: 0 0 6px; }
+.aplayer-transcript .cue time { color: var(--primary, #00796D); font-weight: 700; margin-right: 6px; font-variant-numeric: tabular-nums; }
+.aplayer-transcript .sound { font-style: italic; color: var(--text-muted, #666); }
